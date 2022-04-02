@@ -1,0 +1,31 @@
+obj/Debug/ThermoControlLibrary/Interface.o: \
+ src/ThermoControlLibrary/Interface.c \
+ c\:\sysgcc\raspberry\arm-linux-gnueabihf\sysroot\usr\include/stdc-predef.h \
+ c\:\sysgcc\raspberry\lib\gcc\arm-linux-gnueabihf\10\include/stdint.h \
+ c\:\sysgcc\raspberry\arm-linux-gnueabihf\sysroot\usr\include/stdint.h \
+ c\:\sysgcc\raspberry\arm-linux-gnueabihf\sysroot\usr\include\arm-linux-gnueabihf/bits/libc-header-start.h \
+ c\:\sysgcc\raspberry\arm-linux-gnueabihf\sysroot\usr\include/features.h \
+ c\:\sysgcc\raspberry\arm-linux-gnueabihf\sysroot\usr\include\arm-linux-gnueabihf/sys/cdefs.h \
+ c\:\sysgcc\raspberry\arm-linux-gnueabihf\sysroot\usr\include\arm-linux-gnueabihf/bits/wordsize.h \
+ c\:\sysgcc\raspberry\arm-linux-gnueabihf\sysroot\usr\include\arm-linux-gnueabihf/bits/long-double.h \
+ c\:\sysgcc\raspberry\arm-linux-gnueabihf\sysroot\usr\include\arm-linux-gnueabihf/gnu/stubs.h \
+ c\:\sysgcc\raspberry\arm-linux-gnueabihf\sysroot\usr\include\arm-linux-gnueabihf/gnu/stubs-hard.h \
+ c\:\sysgcc\raspberry\arm-linux-gnueabihf\sysroot\usr\include\arm-linux-gnueabihf/bits/types.h \
+ c\:\sysgcc\raspberry\arm-linux-gnueabihf\sysroot\usr\include\arm-linux-gnueabihf/bits/timesize.h \
+ c\:\sysgcc\raspberry\arm-linux-gnueabihf\sysroot\usr\include\arm-linux-gnueabihf/bits/typesizes.h \
+ c\:\sysgcc\raspberry\arm-linux-gnueabihf\sysroot\usr\include\arm-linux-gnueabihf/bits/time64.h \
+ c\:\sysgcc\raspberry\arm-linux-gnueabihf\sysroot\usr\include\arm-linux-gnueabihf/bits/wchar.h \
+ c\:\sysgcc\raspberry\arm-linux-gnueabihf\sysroot\usr\include\arm-linux-gnueabihf/bits/stdint-intn.h \
+ c\:\sysgcc\raspberry\arm-linux-gnueabihf\sysroot\usr\include\arm-linux-gnueabihf/bits/stdint-uintn.h \
+ c\:\sysgcc\raspberry\arm-linux-gnueabihf\sysroot\usr\include/stdio.h \
+ c\:\sysgcc\raspberry\lib\gcc\arm-linux-gnueabihf\10\include/stddef.h \
+ c\:\sysgcc\raspberry\lib\gcc\arm-linux-gnueabihf\10\include/stdarg.h \
+ c\:\sysgcc\raspberry\arm-linux-gnueabihf\sysroot\usr\include\arm-linux-gnueabihf/bits/types/__fpos_t.h \
+ c\:\sysgcc\raspberry\arm-linux-gnueabihf\sysroot\usr\include\arm-linux-gnueabihf/bits/types/__mbstate_t.h \
+ c\:\sysgcc\raspberry\arm-linux-gnueabihf\sysroot\usr\include\arm-linux-gnueabihf/bits/types/__fpos64_t.h \
+ c\:\sysgcc\raspberry\arm-linux-gnueabihf\sysroot\usr\include\arm-linux-gnueabihf/bits/types/__FILE.h \
+ c\:\sysgcc\raspberry\arm-linux-gnueabihf\sysroot\usr\include\arm-linux-gnueabihf/bits/types/FILE.h \
+ c\:\sysgcc\raspberry\arm-linux-gnueabihf\sysroot\usr\include\arm-linux-gnueabihf/bits/types/struct_FILE.h \
+ c\:\sysgcc\raspberry\arm-linux-gnueabihf\sysroot\usr\include\arm-linux-gnueabihf/bits/stdio_lim.h \
+ c\:\sysgcc\raspberry\arm-linux-gnueabihf\sysroot\usr\include\arm-linux-gnueabihf/bits/sys_errlist.h \
+ inc/defines.h inc/incs.h inc/config.h
