@@ -20,13 +20,13 @@
 #define cooler_PWM_CHANNEL 0
 #define cooler_Frequence   10 // Hz
 #define cooler_altFNumber  BCM2835_GPIO_FSEL_ALT0
-#define cooler_PIN         RPI_GPIO_P1_12
+#define cooler_PIN         RPI_BPLUS_GPIO_J8_32
 #define cooler_Range       (PWM_BaseRate / (PWM_divider * cooler_Frequence))
 
 #define heater_PWM_CHANNEL 1
 #define heater_Frequence   40 // Hz
 #define heater_altFNumber  BCM2835_GPIO_FSEL_ALT0
-#define heater_PIN         RPI_GPIO_P1_13
+#define heater_PIN         RPI_BPLUS_GPIO_J8_33
 #define heater_Range       (PWM_BaseRate / (PWM_divider * heater_Frequence))
 
 typedef struct

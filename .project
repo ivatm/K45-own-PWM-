@@ -25,21 +25,12 @@
 	</natures>
 	<filteredResources>
 		<filter>
-			<id>1647799715875</id>
+			<id>1648916979589</id>
 			<name></name>
 			<type>30</type>
 			<matcher>
 				<id>org.eclipse.ui.ide.multiFilter</id>
 				<arguments>1.0-name-matches-false-false-.svn</arguments>
-			</matcher>
-		</filter>
-		<filter>
-			<id>1647799715878</id>
-			<name></name>
-			<type>30</type>
-			<matcher>
-				<id>org.eclipse.ui.ide.multiFilter</id>
-				<arguments>1.0-name-matches-false-false-bin</arguments>
 			</matcher>
 		</filter>
 	</filteredResources>

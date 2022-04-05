@@ -82,7 +82,7 @@ void PWM_set(uint16_t wChannelNumber, uint16_t wValue)
 {
    uint32_t lData;
 
-   lData = (uint64_t)(PWMConfs[wChannelNumber].lRange * wValue) / 100;
+   lData = ((uint64_t)PWMConfs[wChannelNumber].lRange * wValue) / kMaxVarValue;
 
    bcm2835_pwm_set_data(PWMConfs[wChannelNumber].Channel, lData);
 }

@@ -25,10 +25,10 @@ void PerceiveInputCommand(void);
 uint8_t get_key(void)
 {
    //pirform a tiny tiny riset
-   bcm2835_gpio_write(PIN24, LOW);
-   bcm2835_gpio_write(PIN26, LOW);
-   bcm2835_gpio_write(PIN28, LOW);
-   bcm2835_gpio_write(PIN32, LOW);
+   bcm2835_gpio_write(PIN_COL1, LOW);
+   bcm2835_gpio_write(PIN_COL2, LOW);
+   bcm2835_gpio_write(PIN_COL3, LOW);
+   bcm2835_gpio_write(PIN_COL4, LOW);
    uint8_t i, j;
    for (i = 0; i < COLS; i++)
    {
@@ -106,23 +106,23 @@ uint8_t init_keypad(void)
  //     return 1;
 
 //set columns as outputs (pulses)
-   bcm2835_gpio_fsel (PIN24, BCM2835_GPIO_FSEL_OUTP);
-   bcm2835_gpio_fsel (PIN26, BCM2835_GPIO_FSEL_OUTP);
-   bcm2835_gpio_fsel (PIN28, BCM2835_GPIO_FSEL_OUTP);
-   bcm2835_gpio_fsel (PIN32, BCM2835_GPIO_FSEL_OUTP);
+   bcm2835_gpio_fsel (PIN_COL1, BCM2835_GPIO_FSEL_OUTP);
+   bcm2835_gpio_fsel (PIN_COL2, BCM2835_GPIO_FSEL_OUTP);
+   bcm2835_gpio_fsel (PIN_COL3, BCM2835_GPIO_FSEL_OUTP);
+   bcm2835_gpio_fsel (PIN_COL4, BCM2835_GPIO_FSEL_OUTP);
 
    //set rows as inputs (pulses)
-   bcm2835_gpio_fsel (PIN27, BCM2835_GPIO_FSEL_INPT);
-   bcm2835_gpio_fsel (PIN29, BCM2835_GPIO_FSEL_INPT);
-   bcm2835_gpio_fsel (PIN31, BCM2835_GPIO_FSEL_INPT);
-   bcm2835_gpio_fsel (PIN33, BCM2835_GPIO_FSEL_INPT);
-   bcm2835_gpio_fsel (PIN37, BCM2835_GPIO_FSEL_INPT);
+   bcm2835_gpio_fsel (PIN_ROW1, BCM2835_GPIO_FSEL_INPT);
+   bcm2835_gpio_fsel (PIN_ROW2, BCM2835_GPIO_FSEL_INPT);
+   bcm2835_gpio_fsel (PIN_ROW3, BCM2835_GPIO_FSEL_INPT);
+   bcm2835_gpio_fsel (PIN_ROW4, BCM2835_GPIO_FSEL_INPT);
+   bcm2835_gpio_fsel (PIN_ROW5, BCM2835_GPIO_FSEL_INPT);
 
-   bcm2835_gpio_set_pud (PIN27, BCM2835_GPIO_PUD_DOWN);
-   bcm2835_gpio_set_pud (PIN29, BCM2835_GPIO_PUD_DOWN);
-   bcm2835_gpio_set_pud (PIN31, BCM2835_GPIO_PUD_DOWN);
-   bcm2835_gpio_set_pud (PIN33, BCM2835_GPIO_PUD_DOWN);
-   bcm2835_gpio_set_pud (PIN37, BCM2835_GPIO_PUD_DOWN);
+   bcm2835_gpio_set_pud (PIN_ROW1, BCM2835_GPIO_PUD_DOWN);
+   bcm2835_gpio_set_pud (PIN_ROW2, BCM2835_GPIO_PUD_DOWN);
+   bcm2835_gpio_set_pud (PIN_ROW3, BCM2835_GPIO_PUD_DOWN);
+   bcm2835_gpio_set_pud (PIN_ROW4, BCM2835_GPIO_PUD_DOWN);
+   bcm2835_gpio_set_pud (PIN_ROW5, BCM2835_GPIO_PUD_DOWN);
 
 #ifdef debugmode
    //printf("Keypad configured! \n");

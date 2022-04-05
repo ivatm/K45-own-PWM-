@@ -294,21 +294,21 @@ void ShowErrorExecutivePlate(Display_Zone_struct* psDisplayStructData, display_z
             switch (eError_ToShow)
             {
                case keHeaterVoltage:
-                  if (sPowerModulState.bErrorValue1)
+                  if (sPowerModulState.bHeaterError3)
                   {
                      bNeedsToShow = TRUE;
                      LCDI2C_write_String("Err!Heater");
                   }
                   break;
                case keCoolerVoltage:
-                  if (sPowerModulState.bErrorValue2)
+                  if (sPowerModulState.bCoolerError3)
                   {
                      bNeedsToShow = TRUE;
                      LCDI2C_write_String("Err!Cooler");
                   }
                   break;
                case keControlDiodeVoltage:
-                  if (sPowerModulState.bErrorValue3)
+                  if (sPowerModulState.bControlDiodeError3)
                   {
                      bNeedsToShow = TRUE;
                      LCDI2C_write_String("Err!Diode ");

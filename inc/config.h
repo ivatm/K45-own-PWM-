@@ -39,4 +39,8 @@
    -------------------------------------------------------*/
 #define RASPBERRY_PWM
 
+// Local defines
+//#define NO_CONTROL_LEVELS
+
+
 #endif /* CONFIG_H_ */

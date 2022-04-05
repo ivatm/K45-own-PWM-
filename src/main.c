@@ -144,6 +144,9 @@ void* ServiceMeasurements_Process()
 
       delay(kIndicationTimeUpdate);
    }
+
+   gpioTerminate();
+
    return NULL;
 }
 
@@ -441,32 +444,34 @@ uint16_t K45GlobalInit(void)
    //
    DEV_ModuleInit();
 
-   #ifdef RASPBERRY_PWM
-   PowerModulconfigured = PWM_init();
-   #else
-      PowerModulconfigured = periferal_SPI1_Init();
-   #endif
-
-   if (PowerModulconfigured)
-   {
-      Result = FALSE;
-   }
-   else
-   {
-      Result = TRUE;
-      printf("SPI can`t configure ...\n");
-   }
+   Result = FALSE;
 
    if (ADC_Init())
    {
       printf("ADS1256 inited\n");
-      Result = FALSE;
    }
    else
    {
       printf("ADS1256 wrong\n");
       Result = TRUE;
    }
+
+   #ifdef RASPBERRY_PWM
+      PowerModulconfigured = PWM_init();
+   #else
+      PowerModulconfigured = periferal_SPI1_Init();
+   #endif
+
+   if (PowerModulconfigured)
+   {
+      // still Result = FALSE;
+   }
+   else
+   {
+      Result = TRUE;
+      printf("PowerModul can`t configure ...\n");
+   }
+
 
    // Initialisation LCD via i2c connection
    lcd_Init();
@@ -485,7 +490,7 @@ uint16_t K45GlobalInit(void)
    {
       printf("UART inited\n");
       bUART_Active = TRUE;
-      Result = FALSE;
+      // still Result = FALSE;
    }
 
    // FALSE - Allright
@@ -511,6 +516,5 @@ int main(void)
     pthread_join( ServiceMeasurements,  NULL);
     pthread_join( UARTCommThread,       NULL);
 
-    gpioTerminate();
     return 0;
 }

@@ -11,7 +11,6 @@
 #include "pigpio.h"
 #include <stdio.h>
 
-
 #include "addMeasurements.h"
 #include "defines.h"
 #include "globalvarheads.h"
@@ -42,21 +41,39 @@ int PigpioInit(void)
 
    if (gpioInitialise()<0) return 1;
 
+   // if (gpioRead(fPowerModulStatus.sStatus.bHeaterError3))
+   if (bcm2835_gpio_lev(kGPIO_check_diode))
+   {
+      fPowerModulStatus.sStatus.bControlDiodeError3 = TRUE;
+   }
+
+   if (bcm2835_gpio_lev(kGPIO_check_heater))
+   {
+      fPowerModulStatus.sStatus.bHeaterError3 = TRUE;
+   }
+
+   if (bcm2835_gpio_lev(kGPIO_check_cooler))
+   {
+      fPowerModulStatus.sStatus.bCoolerError3 = TRUE;
+   }
+
    // Frequency measurement.
    // Only front edge checked
    gpioSetISRFunc(kGPIO_frequency_input, RISING_EDGE, -1, ImpulsCounter);
 
-   // Inition heater control voltage
-   // Both edges are checked to be able to find out where the impuls ended
-   gpioSetAlertFunc(kGPIO_check_heater, HeaterCheck);
+   #ifndef NO_CONTROL_LEVELS
+      // Inition heater control voltage
+      // Both edges are checked to be able to find out where the impuls ended
+      gpioSetAlertFunc(kGPIO_check_heater, HeaterCheck);
 
-   // Inition cooler (evaporator) control voltage
-   // Both edges are checked to be able to find out where the impuls ended
-   gpioSetAlertFunc(kGPIO_check_cooler, CoolerCheck);
+      // Inition cooler (evaporator) control voltage
+      // Both edges are checked to be able to find out where the impuls ended
+      gpioSetAlertFunc(kGPIO_check_cooler, CoolerCheck);
 
-   // Inition diode control voltage
-   // Both edges are checked to be able to find out where the impuls ended
-   gpioSetAlertFunc(kGPIO_check_diode, ControlDiodeCheck);
+      // Inition diode control voltage
+      // Both edges are checked to be able to find out where the impuls ended
+      gpioSetAlertFunc(kGPIO_check_diode, ControlDiodeCheck);
+   #endif
 
    return 0;
 }
@@ -119,16 +136,16 @@ void FrequencyMeasurement(void)
 /* ----------------------------------------------
  * Callback on GPIO - interrupt on state change
  * ---------------------------------------------- */
-void ControlDiodeCheck(int gpio, int level, uint32_t tick)
+void HeaterCheck(int gpio, int level, uint32_t tick)
 {
-   //if (bcm2835_gpio_lev(kGPIO_check_diode))
+
    if (level == 1)
-   {
-      fPowerModulStatus.sStatus.bErrorValue1 = FALSE;
+   { // change to high (a rising edge)
+      fPowerModulStatus.sStatus.bHeaterError3 = FALSE;
    }
    else
    {
-      fPowerModulStatus.sStatus.bErrorValue1 = TRUE;
+      fPowerModulStatus.sStatus.bHeaterError3 = TRUE;
    }
 }
 
@@ -139,28 +156,30 @@ void CoolerCheck(int gpio, int level, uint32_t tick)
 {
    //if (bcm2835_gpio_lev(kGPIO_check_cooler))
    if (level == 1)
-   {
-      fPowerModulStatus.sStatus.bErrorValue2 = FALSE;
+   {// change to high (a rising edge)
+      fPowerModulStatus.sStatus.bCoolerError3 = FALSE;
    }
    else
    {
-      fPowerModulStatus.sStatus.bErrorValue2 = TRUE;
+      fPowerModulStatus.sStatus.bCoolerError3 = TRUE;
    }
 }
 
 /* ----------------------------------------------
  * Callback on GPIO - interrupt on state change
  * ---------------------------------------------- */
-void HeaterCheck(int gpio, int level, uint32_t tick)
+void ControlDiodeCheck(int gpio, int level, uint32_t tick)
 {
    // if (bcm2835_gpio_lev(kGPIO_check_heater))
    if (level == 1)
-   {
-      fPowerModulStatus.sStatus.bErrorValue3 = FALSE;
+   {// change to high (a rising edge)
+      printf("Clear\r\n");
+      fPowerModulStatus.sStatus.bControlDiodeError3 = FALSE;
    }
    else
    {
-      fPowerModulStatus.sStatus.bErrorValue3 = TRUE;
+      printf("Set\r\n");
+      fPowerModulStatus.sStatus.bControlDiodeError3 = TRUE;
    }
 }
 

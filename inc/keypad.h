@@ -7,27 +7,34 @@
 #include <bcm2835.h>
  #include <stdio.h>
 #include "user_types.h"
- 
+
 //Define the conencted pins
-#define PIN27    0
-#define PIN29    5
-#define PIN31    6
-#define PIN33    13
-#define PIN37    26
+#define PIN_ROW1    0
+#define PIN_ROW2    5
+#define PIN_ROW3    6
+#ifdef RASPBERRY_PWM
+#define PIN_ROW4    19
+#else
+#define PIN_ROW4    13
+#endif
+#define PIN_ROW5    26
 
-#define PIN24    8
-#define PIN26    7
-#define PIN28    1
-#define PIN32    12
-
+#define PIN_COL1    8
+#define PIN_COL2    7
+#define PIN_COL3    1
+#ifdef RASPBERRY_PWM
+#define PIN_COL4    25
+#else
+#define PIN_COL4    12
+#endif
 //Define the size of the keypad
 #define ROWS 5
 #define COLS 4
 
 //define the column positions to pins
-  uint8_t cols[COLS]={PIN24,PIN26,PIN28,PIN32};
+  uint8_t cols[COLS]={PIN_COL1,PIN_COL2,PIN_COL3,PIN_COL4};
 //define the row position to pins
-  uint8_t row[ROWS]={PIN27,PIN29,PIN31,PIN33, PIN37};
+  uint8_t row[ROWS]={PIN_ROW1,PIN_ROW2,PIN_ROW3,PIN_ROW4, PIN_ROW5};
 //setup the uint8_tacter mapping
   uint8_t map[ROWS][COLS]=
           {{'E','>','0','<'},

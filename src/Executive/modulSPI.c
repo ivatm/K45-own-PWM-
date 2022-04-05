@@ -115,13 +115,16 @@ boolean setExecuteModule(void)
 
    #ifdef RASPBERRY_PWM
 
+   #ifndef NO_CONTROL_LEVELS
       if (fPowerModulStatus.cStatusByte)
       {
          PWM_set(cooler_PWM_CHANNEL, 0);
          PWM_set(heater_PWM_CHANNEL, 0);
       }
       else
+   #endif
       {
+
          PWM_set(cooler_PWM_CHANNEL, LimitPWM(GetCoolerSetpoint()));
          PWM_set(heater_PWM_CHANNEL, LimitPWM(GetHeaterSetpoint()));
       }
@@ -180,9 +183,9 @@ boolean setExecuteModule(void)
          //printf("\r\n");
 
          //printf("SetMode = %hhx\r\n",fPowerModulStatus.sStatus.bSetMode);
-         //printf("bErrorValue1 = %hhx\r\n",fPowerModulStatus.sStatus.bErrorValue1);
-         //printf("bErrorValue2 = %hhx\r\n",fPowerModulStatus.sStatus.bErrorValue2);
-         //printf("bErrorValue3 = %hhx\r\n",fPowerModulStatus.sStatus.bErrorValue3);
+         //printf("bHeaterError3 = %hhx\r\n",fPowerModulStatus.sStatus.bHeaterError3);
+         //printf("bCoolerError3 = %hhx\r\n",fPowerModulStatus.sStatus.bCoolerError3);
+         //printf("bControlDiodeError3 = %hhx\r\n",fPowerModulStatus.sStatus.bControlDiodeError3);
 
       #endif
    #endif
@@ -275,9 +278,9 @@ uint16_t LimitPWM(uint16_t Input)
    uint32_t lLocalWorkVar;
 
    iResult = Input;
-   lLocalWorkVar = ((uint32_t)kMaxVarValue*kLowLimitPWM)/100;
 
    #if (kLowLimitPWM > 0)
+   lLocalWorkVar = ((uint32_t)kMaxVarValue*kLowLimitPWM)/100;
    if ((uint32_t)Input < lLocalWorkVar)
    {
       iResult = (uint16_t)lLocalWorkVar;
