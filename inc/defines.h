@@ -20,24 +20,24 @@
 #define kCoefMax  999
 #define kCoefMin  0
 
-#define kTemperatureMax     373
-#define kTemperatureMin     (0)
+#define kTemperatureMax    373
+#define kTemperatureMin    (0)
 
-#define kCelsiumShift       (273.15)
-#define kStartTemperature   (293)
+#define kCelsiumShift     (273.15)
+#define kStartTemperature (293)
 
-#define kTimeMax            (300)   // Max time for setting
-#define kTimeMin            (30)    // Min time for setting
+#define kTimeMax        (300)   // Max time for setting
+#define kTimeMin        (30)    // Min time for setting
 
 // ADC defines -----------------------------------------
-#define kSensorInput        (2)    // ADC input number to which the sensor connected
+#define kSensorInput    (2)    // ADC input number to which the sensor connected
 
 #define kfUmax               5.0         // MAX Voltage
 #define kiUmax  mNormVoltage(1.25)        // MAX Voltage
 #define kfUmin               0
 
-#define mNormVoltage(x)      (uint16_t)(((float)((float)x - kfUmin) * 65535.0) / ((float)kfUmax - kfUmin))
-#define mDeNormVoltage(x)    ((float)       ((float)x * (kfUmax - kfUmin)) / 65535.0 + kfUmin)
+#define mNormVoltage(x)   (uint16_t)(((float)((float)x - kfUmin) * 65535.0) / ((float)kfUmax - kfUmin))
+#define mDeNormVoltage(x) ((float)       ((float)x * (kfUmax - kfUmin)) / 65535.0 + kfUmin)
 
 
 // System timer identifications
@@ -126,6 +126,15 @@
 #define kTemperaturControlPeriod    (0.1)                              // Temperature update 100 ms
 // Should be multiple to temperature control. Indeed we cannot expect faster changing than it is measured
 #define kTemperatureScanUpdate      (1 * kTemperaturControlPeriod)
+
+// Default values
+#define Def_Kprop (10)
+#define Def_Kint  (100)
+#define Def_Kdiff (1)
+#define Def_CryoLevelMeasuring (1)
+#define Def_LowLevelFrequency  (6000)
+#define Def_HighLevelFrequency (1000)
+#define Def_CelsiumOrKelvin    (1)
 
 // File name for all configurations
 #define config_file "K45_settings.dat"

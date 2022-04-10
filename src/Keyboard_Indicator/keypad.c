@@ -16,6 +16,7 @@ extern uint16_t saveSettings(void);
 extern void ADC_service(void);
 extern void ShowSensor(void);
 extern void K45_Exit(uint16_t iReason);
+extern void RestoreDefault(void);
 
 // Local procedures
 boolean PossibleInput(VarsForIndicator_enum eVariable);
@@ -444,17 +445,34 @@ void ProcessCommand(KeyPadCommands_enum eCommand)
    switch(eCommand)
    {
       case keLeftCommand:
+
          if (eCurrentCursorZone == eUserValue)
          {
             eLokalVariable = sDisplay_Zone[eUserValue].eVariable;
 
-            if (eLokalVariable == keTreal)
+            if (eLokalVariable == keTreal) // 0
             {
-               eLokalVariable = keUreal;
+               eLokalVariable = keMaxVariableNum - 1;
             }
             else
             {
                eLokalVariable--;
+            }
+
+            // if the level is not measured to hide the according value
+            if (!bCryoLevelMeasuring)
+            {
+               if (eLokalVariable == keCLevel)
+               {
+                  if (keCLevel > 0)
+                  {
+                     eLokalVariable--;
+                  }
+                  else
+                  {
+                     eLokalVariable = keMaxVariableNum - 1;
+                  }
+               }
             }
 
             //sDisplay_Zone[eUserValue].bOnOrOff = TRUE;
@@ -494,6 +512,23 @@ void ProcessCommand(KeyPadCommands_enum eCommand)
             {
                eLokalVariable++;
             }
+
+            // if the level is not measured to hide the according value
+            if (!bCryoLevelMeasuring)
+            {
+               if (eLokalVariable == keCLevel)
+               {
+                  if (keCLevel < (keMaxVariableNum - 1))
+                  {
+                     eLokalVariable++;
+                  }
+                  else
+                  {
+                     eLokalVariable = 0;
+                  }
+               }
+            }
+
 
             //sDisplay_Zone[eUserValue].bOnOrOff = TRUE;
             sDisplay_Zone[eUserValue].eDataTypeDisplay = keSetValue;
@@ -614,8 +649,11 @@ void PerceiveInputValue(void)
          lOutValue = atol(sInputString.InputString);
          break;
 
-
       case keUreal:
+         // Nothing
+         break;
+
+      case keCLevel:
          // Nothing
          break;
 
@@ -687,6 +725,38 @@ void PerceiveInputCommand(void)
 
       case keShowSensor:
          ShowSensor();
+         break;
+
+      case keSetCryoLevelSwitch:
+         bCryoLevelMeasuring = !bCryoLevelMeasuring;
+         break;
+
+      case keSetFrequency_LowLevel:
+         // only if measured frequency more then high level
+         if (MeasuredFrequency > HighLevelFrequency)
+         {
+            LowLevelFrequency = MeasuredFrequency;
+         }
+         else
+         {
+            // otherwise both levels equal
+            LowLevelFrequency = HighLevelFrequency;
+         }
+         break;
+
+      case keSetFrequency_HighLevel:
+         if (MeasuredFrequency < HighLevelFrequency)
+         {
+            HighLevelFrequency = MeasuredFrequency;
+         }
+         else
+         {
+            HighLevelFrequency = LowLevelFrequency;
+         }
+         break;
+
+      case keRestoreDefault:
+         RestoreDefault();
          break;
 
       default:

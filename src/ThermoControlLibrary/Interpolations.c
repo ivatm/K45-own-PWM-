@@ -259,3 +259,37 @@ uint32_t getTemperatureValue(float fVoltage)
    return(lResult);
 }
 
+/*
+ * uint32_t GetCryoLevel(uint16_t MesuredFrequency)
+ * The procedure returns the level of cryo liquid according to MesuredFrequency
+ * */
+uint32_t GetCryoLevel(uint16_t MesuredFrequency)
+{
+   uint32_t Result;
+
+   Result = 0;
+
+   if (LowLevelFrequency < HighLevelFrequency)
+   {
+      // Configuration error
+      return(-1);
+   }
+
+   if (MesuredFrequency >= LowLevelFrequency)
+   {
+      Result  = 0;
+   }
+   else if (MesuredFrequency <= HighLevelFrequency)
+   {
+      Result = 100;
+   }
+   else
+   {
+      // Overflow impossible since the frequencies are 16-bit integers
+      Result = ((LowLevelFrequency - MesuredFrequency) * 100)/(LowLevelFrequency - HighLevelFrequency);
+   }
+
+   return(Result);
+
+}
+

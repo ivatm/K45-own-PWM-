@@ -183,9 +183,9 @@ boolean setExecuteModule(void)
          //printf("\r\n");
 
          //printf("SetMode = %hhx\r\n",fPowerModulStatus.sStatus.bSetMode);
-         //printf("bHeaterError3 = %hhx\r\n",fPowerModulStatus.sStatus.bHeaterError3);
-         //printf("bCoolerError3 = %hhx\r\n",fPowerModulStatus.sStatus.bCoolerError3);
-         //printf("bControlDiodeError3 = %hhx\r\n",fPowerModulStatus.sStatus.bControlDiodeError3);
+         //printf("bHeaterError  = %hhx\r\n",fPowerModulStatus.sStatus.bHeaterError );
+         //printf("bCoolerError  = %hhx\r\n",fPowerModulStatus.sStatus.bCoolerError );
+         //printf("bControlDiodeError = %hhx\r\n",fPowerModulStatus.sStatus.bControlDiodeError);
 
       #endif
    #endif
@@ -278,9 +278,9 @@ uint16_t LimitPWM(uint16_t Input)
    uint32_t lLocalWorkVar;
 
    iResult = Input;
+   lLocalWorkVar = ((uint32_t)kMaxVarValue*kLowLimitPWM)/100;
 
    #if (kLowLimitPWM > 0)
-   lLocalWorkVar = ((uint32_t)kMaxVarValue*kLowLimitPWM)/100;
    if ((uint32_t)Input < lLocalWorkVar)
    {
       iResult = (uint16_t)lLocalWorkVar;

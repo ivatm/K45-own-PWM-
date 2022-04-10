@@ -294,21 +294,21 @@ void ShowErrorExecutivePlate(Display_Zone_struct* psDisplayStructData, display_z
             switch (eError_ToShow)
             {
                case keHeaterVoltage:
-                  if (sPowerModulState.bHeaterError3)
+                  if (sPowerModulState.bHeaterError )
                   {
                      bNeedsToShow = TRUE;
                      LCDI2C_write_String("Err!Heater");
                   }
                   break;
                case keCoolerVoltage:
-                  if (sPowerModulState.bCoolerError3)
+                  if (sPowerModulState.bCoolerError )
                   {
                      bNeedsToShow = TRUE;
                      LCDI2C_write_String("Err!Cooler");
                   }
                   break;
                case keControlDiodeVoltage:
-                  if (sPowerModulState.bControlDiodeError3)
+                  if (sPowerModulState.bControlDiodeError)
                   {
                      bNeedsToShow = TRUE;
                      LCDI2C_write_String("Err!Diode ");
@@ -543,6 +543,12 @@ void GetStringOfVariable(Display_Zone_struct* psDisplayStructData, char* pOutStr
          #endif // debugmode
          break;
 
+      case keCLevel:
+         prefix[0] = ' ';prefix[1] = 'L';prefix[2] = 'c';prefix[3] = '=';
+         sufix[0] = ' '; sufix[1] = '%';
+         sprintf(String, "%d", lValueToIndicator);
+         break;
+
       default:
          break;
    }
@@ -664,6 +670,11 @@ void GetStringOfEnterMode(Display_Zone_struct* psDisplayStructData, char* pOutSt
          case keUreal:
             prefix[0] = ' ';prefix[1] = 'U';prefix[2] = 'r';prefix[3] = '=';
             sufix[0] = ' '; sufix[1] = 'V';
+            break;
+
+         case keCLevel:
+            prefix[0] = ' ';prefix[1] = 'L';prefix[2] = 'c';prefix[3] = '=';
+            sufix[0] = ' '; sufix[1] = '%';
             break;
 
          default:

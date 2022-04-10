@@ -22,7 +22,8 @@ uint32_t lTemperatureReal     = mNormTemp(kStartTemperature); // Current measure
 int32_t slTemperatureSpeed    = mNormTemp(kStartTemperature); // Normalized temperature increasing in 100 ms
 
 uint32_t lTemperatureSet      = mNormTemp(kStartTemperature); // Set temperature
-boolean bCelsiumOrKelvin      = TRUE;
+
+boolean bCelsiumOrKelvin      = Def_CelsiumOrKelvin;
 
 
 /* ---------------------------------------------------
@@ -40,9 +41,10 @@ char     SensorName[10];
  * --------------------------------------------------- */
 // The Variables for non-volatile memory (saved on Disc)
 // For PID regulator
-uint32_t lKprop = 10,
-         lKint  = 100,
-         lKdiff = 1;                               // PID coefficients
+
+uint32_t lKprop = Def_Kprop ,
+         lKint  = Def_Kint  ,
+         lKdiff = Def_Kdiff ;                               // PID coefficients
 
 //
 uint16_t iHeaterEffect = 0;         // Output effect of regulation heater
@@ -75,3 +77,15 @@ boolean            bADCCalibrationProcess; // Flag of calibration process
 
 // All threads controlling
 fSystemThreadControl_Union fSystemThreadControl;
+
+/* ---------------------------------------------------
+ * Measuring of cryogenic liquids level
+ * --------------------------------------------------- */
+// Flag of possibility to measure the cryoliquid. If TRUE - the measured value will be indicated
+
+boolean  bCryoLevelMeasuring = Def_CryoLevelMeasuring;
+uint16_t LowLevelFrequency  = Def_LowLevelFrequency;  // The frequency in kHz according to 0% of level
+uint16_t HighLevelFrequency = Def_HighLevelFrequency; // The frequency in kHz according to 100% of level
+uint16_t MeasuredFrequency;                           // This value will be admittedly received from CoProcessor
+// Cryo-liquid measuring
+uint32_t lCryoLevel; // %

@@ -30,6 +30,7 @@ uint16_t iMeasuredFrequency;
 
 //
 extern int gpioCfgClock(unsigned cfgMicros, unsigned cfgPeripheral, unsigned cfgSource);
+extern uint32_t GetCryoLevel(uint16_t MesuredFrequency);
 
 // ------------------------------------------------------------------------------------------------
 /* ----------------------------------------------
@@ -41,20 +42,20 @@ int PigpioInit(void)
 
    if (gpioInitialise()<0) return 1;
 
-   // if (gpioRead(fPowerModulStatus.sStatus.bHeaterError3))
+   // if (gpioRead(fPowerModulStatus.sStatus.bHeaterError ))
    if (bcm2835_gpio_lev(kGPIO_check_diode))
    {
-      fPowerModulStatus.sStatus.bControlDiodeError3 = TRUE;
+      fPowerModulStatus.sStatus.bControlDiodeError = TRUE;
    }
 
    if (bcm2835_gpio_lev(kGPIO_check_heater))
    {
-      fPowerModulStatus.sStatus.bHeaterError3 = TRUE;
+      fPowerModulStatus.sStatus.bHeaterError  = TRUE;
    }
 
    if (bcm2835_gpio_lev(kGPIO_check_cooler))
    {
-      fPowerModulStatus.sStatus.bCoolerError3 = TRUE;
+      fPowerModulStatus.sStatus.bCoolerError  = TRUE;
    }
 
    // Frequency measurement.
@@ -124,12 +125,13 @@ void FrequencyMeasurement(void)
       iMeasuredFrequency = (iLocalImpulsCounter * 1000) / lMilliSeconds; // Hz
       iLocalImpulsCounter = 0;
       pthread_mutex_unlock(&ImpulsCounter_lock);
-      printf("iMeasuredFrequency = %d\r\n", iMeasuredFrequency);
    }
    else
    {
       iMeasuredFrequency = 0;
    }
+
+   lCryoLevel = GetCryoLevel(iMeasuredFrequency);
 }
 
 // ------------------------------------------------------------------------------------------------
@@ -141,11 +143,11 @@ void HeaterCheck(int gpio, int level, uint32_t tick)
 
    if (level == 1)
    { // change to high (a rising edge)
-      fPowerModulStatus.sStatus.bHeaterError3 = FALSE;
+      fPowerModulStatus.sStatus.bHeaterError  = FALSE;
    }
    else
    {
-      fPowerModulStatus.sStatus.bHeaterError3 = TRUE;
+      fPowerModulStatus.sStatus.bHeaterError  = TRUE;
    }
 }
 
@@ -157,11 +159,11 @@ void CoolerCheck(int gpio, int level, uint32_t tick)
    //if (bcm2835_gpio_lev(kGPIO_check_cooler))
    if (level == 1)
    {// change to high (a rising edge)
-      fPowerModulStatus.sStatus.bCoolerError3 = FALSE;
+      fPowerModulStatus.sStatus.bCoolerError  = FALSE;
    }
    else
    {
-      fPowerModulStatus.sStatus.bCoolerError3 = TRUE;
+      fPowerModulStatus.sStatus.bCoolerError  = TRUE;
    }
 }
 
@@ -174,12 +176,12 @@ void ControlDiodeCheck(int gpio, int level, uint32_t tick)
    if (level == 1)
    {// change to high (a rising edge)
       printf("Clear\r\n");
-      fPowerModulStatus.sStatus.bControlDiodeError3 = FALSE;
+      fPowerModulStatus.sStatus.bControlDiodeError = FALSE;
    }
    else
    {
       printf("Set\r\n");
-      fPowerModulStatus.sStatus.bControlDiodeError3 = TRUE;
+      fPowerModulStatus.sStatus.bControlDiodeError = TRUE;
    }
 }
 

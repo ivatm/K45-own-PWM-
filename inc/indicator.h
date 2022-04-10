@@ -57,7 +57,7 @@ typedef enum
 
 typedef enum
 {
-   keTreal,      //   lTemperatureReal,
+   keTreal = 0,      //   lTemperatureReal,
    keTset,       //   lTemperatureSet,
    keTcurSet,    //   lTemperatureCurrentSet,
    keDeltaT,     //   lDelta_T,
@@ -66,6 +66,7 @@ typedef enum
 //   keKint,       //   lKint,
    keKdiff,      //   lKdiff,
    keUreal,       //  sSensorData.iUcurrent,
+   keCLevel,      //   lCryoLevel : Cryogenics level,
    keMaxVariableNum
 } VarsForIndicator_enum;
 

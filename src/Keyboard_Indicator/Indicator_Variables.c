@@ -23,6 +23,7 @@ const sVarIndicatorDescription_struct VarForIndication[keMaxVariableNum] =
 /*-*/ //     { &lKint,                  1,                          kCoefMin,                                 kCoefMax                                  },
       { &lKdiff,                 1,                                 kCoefMin,                                 kCoefMax                                  },
       { &sSensorData.lUcurrent,  0,                                 0,                                 0                                    },
+      { &lCryoLevel,             0,                                 0,                                 100                                    },
 
 };
 

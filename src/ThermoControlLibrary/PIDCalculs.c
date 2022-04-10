@@ -203,29 +203,29 @@ void getRegulatorOuputs(void)
 //   unsigned char cOut;
    uint32_t lLocal;
 
-#if (kTemperatureMin == 0)
-   #define kControlLevelChandge mNormTemp(200)
-#else
-   #define kControlLevelChandge 200
-   float         fWork;
-#endif
+   #if (kTemperatureMin == 0)
+      #define kControlLevelChandge mNormTemp(200)
+   #else
+      #define kControlLevelChandge 200
+      float         fWork;
+   #endif
 
    lLocal = (uint32_t)iRegulatorEffect;
 
-#if (kTemperatureMin == 0)
-   if (lTemperatureReal < kControlLevelChandge)
-   {
-      lLocal = lLocal * lTemperatureReal;
-      lLocal = lLocal / kControlLevelChandge;
-   }
-#else
-   fWork = mDeNormTemp(lTemperatureReal);
-   if (fWork < kControlLevelChandge)
-   {
-      fWork = fWork / kControlLevelChandge;
-      lLocal = lLocal * fWork;
-   }
-#endif
+   #if (kTemperatureMin == 0)
+      if (lTemperatureReal < kControlLevelChandge)
+      {
+         lLocal = lLocal * lTemperatureReal;
+         lLocal = lLocal / kControlLevelChandge;
+      }
+   #else
+      fWork = mDeNormTemp(lTemperatureReal);
+      if (fWork < kControlLevelChandge)
+      {
+         fWork = fWork / kControlLevelChandge;
+         lLocal = lLocal * fWork;
+      }
+   #endif
 
    iOut   = mAccToRegEffect((lLocal * kMaxRegulatorEffect) / 65535);
 

@@ -72,8 +72,8 @@ typedef enum
 {
    // According values were received experimental on the dedicated connection
    keNothingPressed = 0,
-   ke_F1             = 102,
-   ke_F2             = 70,
+   ke_F1            = 102,
+   ke_F2            = 70,
    keSharp          = 35,
    keStar           = 42,
    ke_1             = 49,
@@ -120,7 +120,12 @@ typedef enum
    keSaveConfigs            = 12,
    keADCCalibration         = 13,
    keShowSensor             = 14,
-   keNop                    = 254,  // Nothing to do
+   // Configuration of Crioliqudes level meter
+   keSetCryoLevelSwitch     = 15, // On/Off Cryolevel indication
+   keSetFrequency_LowLevel  = 16, // On this command the measured frequency accords to 0 %
+   keSetFrequency_HighLevel = 17, // On this command the measured frequency accords to 100 %
+
+   keRestoreDefault         = 254,
    keExit                   = 255,
    keUnknownCommand         = 0xFFFF,
 } KeyPadCommands_enum;

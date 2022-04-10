@@ -62,9 +62,9 @@ ByteMeaning | StartSym |  Status       | Heater Voltage              | Cooler Vo
 typedef struct
 {
    uint8_t bSetMode             :1;      // Setmode of co-processor
-   uint8_t bHeaterError3        :1;      // HeaterVoltage
-   uint8_t bCoolerError3        :1;      // CoolerVoltage
-   uint8_t bControlDiodeError3  :1;      // ControlDiodeVoltage
+   uint8_t bHeaterError         :1;      // HeaterVoltage
+   uint8_t bCoolerError         :1;      // CoolerVoltage
+   uint8_t bControlDiodeError   :1;      // ControlDiodeVoltage
    uint8_t bNotFoundErr         :1;      // co-processor plate not found
    uint8_t bFree                :3;
 } sStatus_Struct;

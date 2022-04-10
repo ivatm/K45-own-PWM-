@@ -12,10 +12,20 @@
 #include <unistd.h>
 #include "globalvarheads.h"
 
+// Local constants
+static const char* str_Kprop = "#Kprop";
+static const char* str_Kint  = "#Kint";
+static const char* str_Kdiff = "#Kdiff";
+static const char* str_CelsOrKel = "#CelsOrKel";
+static const char* str_LevelMeasuringOn = "#LevelMeasuringOn";
+static const char* str_LowLevelFrequency = "#LowLevelFrequency";
+static const char* str_HighLevelFrequency = "#HighLevelFrequency";
+
 void getSensCharacteristic(uint16_t* piPointNumber, uint16_t* piTemperature_Points, uint16_t* piVoltage_Points);
 boolean getPIDcoefs(void);
 uint16_t getDirectory(void);
 uint16_t saveSettings(void);
+void RestoreDefault(void);
 
 /***********************************************************************************************************
  * The Procedure completes the arrays on pointers
@@ -124,10 +134,6 @@ void getSensCharacteristic(uint16_t* piPointNumber, uint16_t* piTemperature_Poin
  ***********************************************************************************************************/
 boolean getPIDcoefs(void)
 {
-   const char* str_Kprop = "#Kprop";
-   const char* str_Kint  = "#Kint";
-   const char* str_Kdiff = "#Kdiff";
-   const char* str_CelsOrKel = "#CelsOrKel";
 
    FILE* pFilePointer;
    char  str[100];
@@ -181,6 +187,24 @@ boolean getPIDcoefs(void)
                   printf("bCelsiumOrKelvin: %u\n", bCelsiumOrKelvin);
                   iResult++;
                }
+               else if (!strcmp(str, str_LevelMeasuringOn))
+               {
+                  bCryoLevelMeasuring = lLocalKoef;
+                  printf("bCryoLevelMeasuring: %u\n", bCryoLevelMeasuring);
+                  iResult++;
+               }
+               else if (!strcmp(str, str_LowLevelFrequency))
+               {
+                  LowLevelFrequency = lLocalKoef;
+                  printf("LowLevelFrequency: %u\n", LowLevelFrequency);
+                  iResult++;
+               }
+               else if (!strcmp(str, str_HighLevelFrequency))
+               {
+                  HighLevelFrequency = lLocalKoef;
+                  printf("HighLevelFrequency: %u\n", HighLevelFrequency);
+                  iResult++;
+               }
             }
 
          }
@@ -226,7 +250,7 @@ uint16_t saveSettings(void)
       fprintf(fp, "// The configurations K43 controller\r\n");
       fprintf(fp, "\n");
 
-      fprintf(fp, "\n#Kprop\r\n");
+      fprintf(fp, "\n%s\r\n", str_Kprop);
       fprintf(fp, "%u\r\n", lKprop);
 
 #ifdef debugmode
@@ -236,17 +260,29 @@ uint16_t saveSettings(void)
 
 #endif
 
-      fprintf(fp, "\n#Kint\r\n");
+      fprintf(fp, "\n%s\r\n", str_Kint);
       fprintf(fp, "%u\r\n", lKint);
 
-      fprintf(fp, "\n#Kdiff\r\n");
+      fprintf(fp, "\n%s\r\n", str_Kdiff);
       fprintf(fp, "%u\r\n", lKdiff);
 
       fprintf(fp, "\n");
       fprintf(fp, "// Kelvin/Celsium mode\r\n");
 
-      fprintf(fp, "\n#CelsOrKel\r\n");
+      fprintf(fp, "\n%s\r\n", str_CelsOrKel);
       fprintf(fp, "%u\r\n", bCelsiumOrKelvin);
+
+      fprintf(fp, "\n");
+      fprintf(fp, "// Show CryoLevel mode\r\n");
+
+      fprintf(fp, "\n%s\r\n", str_LevelMeasuringOn);
+      fprintf(fp, "%u\r\n", bCryoLevelMeasuring);
+
+      fprintf(fp, "\n%s\r\n", str_LowLevelFrequency);
+      fprintf(fp, "%u\r\n", LowLevelFrequency);
+
+      fprintf(fp, "\n%s\r\n", str_HighLevelFrequency);
+      fprintf(fp, "%u\r\n", HighLevelFrequency);
 
       fclose(fp);
    }
@@ -257,4 +293,19 @@ uint16_t saveSettings(void)
    }
 
    return(0);
+}
+
+
+void RestoreDefault(void)
+{
+   lKprop = Def_Kprop ;
+   lKint  = Def_Kint  ;
+   lKdiff = Def_Kdiff ;
+
+   bCryoLevelMeasuring = Def_CryoLevelMeasuring;
+   LowLevelFrequency   = Def_LowLevelFrequency;
+   HighLevelFrequency  = Def_HighLevelFrequency;
+   bCelsiumOrKelvin      = Def_CelsiumOrKelvin;
+
+
 }
