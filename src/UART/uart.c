@@ -167,6 +167,18 @@ int uart_send(void)
             //buffer_out[iLocalIndex++] = lValueToTransmit;
             break;
 
+         case keCLevel:
+            if (lCryoLevel > 100)
+            {
+               buffer_out[iLocalIndex] = 100;
+            }
+            else
+            {
+               buffer_out[iLocalIndex] = (uint8_t)lCryoLevel;
+            }
+            iLocalIndex++;
+            break;
+
          default:
             break;
       }
@@ -178,9 +190,23 @@ int uart_send(void)
    {
       buffer_out[iLocalIndex] |= 1 << 0;
    }
+
+   // Desired temperature achieved
    if (bTempSetAchieved)
    {
       buffer_out[iLocalIndex] = 1 << 1;
+   }
+
+   // Temperature display mode
+   if (bCelsiumOrKelvin)
+   {
+      buffer_out[iLocalIndex] = 1 << 2;
+   }
+
+   // the Cryolevel measurement foreseen
+   if (bCryoLevelMeasuring)
+   {
+      buffer_out[iLocalIndex] = 1 << 3;
    }
    iLocalIndex++;
 
