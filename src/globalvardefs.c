@@ -84,8 +84,8 @@ fSystemThreadControl_Union fSystemThreadControl;
 // Flag of possibility to measure the cryoliquid. If TRUE - the measured value will be indicated
 
 boolean  bCryoLevelMeasuring = Def_CryoLevelMeasuring;
-uint16_t LowLevelFrequency  = Def_LowLevelFrequency;  // The frequency in kHz according to 0% of level
-uint16_t HighLevelFrequency = Def_HighLevelFrequency; // The frequency in kHz according to 100% of level
-uint16_t MeasuredFrequency;                           // This value will be admittedly received from CoProcessor
+uint32_t LowLevelFrequency  = Def_LowLevelFrequency;  // The frequency in kHz according to 0% of level
+uint32_t HighLevelFrequency = Def_HighLevelFrequency; // The frequency in kHz according to 100% of level
+uint32_t MeasuredFrequency;                           // This value will be admittedly received from CoProcessor
 // Cryo-liquid measuring
 uint32_t lCryoLevel; // %

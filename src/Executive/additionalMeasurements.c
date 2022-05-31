@@ -25,12 +25,12 @@ void ControlDiodeCheck(int gpio, int level, uint32_t tick);
 int PigpioInit(void);
 
 static pthread_mutex_t ImpulsCounter_lock = PTHREAD_MUTEX_INITIALIZER;
-static uint16_t iLocalImpulsCounter;
-uint16_t iMeasuredFrequency;
+static uint32_t lLocalImpulsCounter;
+uint32_t lMeasuredFrequency;
 
 //
 extern int gpioCfgClock(unsigned cfgMicros, unsigned cfgPeripheral, unsigned cfgSource);
-extern uint32_t GetCryoLevel(uint16_t MesuredFrequency);
+extern uint32_t GetCryoLevel(uint32_t MesuredFrequency);
 
 // ------------------------------------------------------------------------------------------------
 /* ----------------------------------------------
@@ -88,9 +88,9 @@ void ImpulsCounter(int gpio, int level, uint32_t tick)
    if (level == 1)
    {
 
-      if (iLocalImpulsCounter < 60000)
+      if (lLocalImpulsCounter < Def_HighLimitFrequence)
       {
-         iLocalImpulsCounter++;
+         lLocalImpulsCounter++;
       }
    }
    else
@@ -98,7 +98,7 @@ void ImpulsCounter(int gpio, int level, uint32_t tick)
       if (level == 2)
       {
          printf("Watchdog\r\n");
-         iLocalImpulsCounter = 0;
+         lLocalImpulsCounter = 0;
       }
    }
 }
@@ -122,16 +122,16 @@ void FrequencyMeasurement(void)
    if (lMilliSeconds > 0)
    {
       pthread_mutex_lock(&ImpulsCounter_lock);
-      iMeasuredFrequency = (iLocalImpulsCounter * 1000) / lMilliSeconds; // Hz
-      iLocalImpulsCounter = 0;
+      lMeasuredFrequency = (lLocalImpulsCounter * 1000) / lMilliSeconds; // Hz
+      lLocalImpulsCounter = 0;
       pthread_mutex_unlock(&ImpulsCounter_lock);
    }
    else
    {
-      iMeasuredFrequency = 0;
+      lMeasuredFrequency = 0;
    }
 
-   lCryoLevel = GetCryoLevel(iMeasuredFrequency);
+   lCryoLevel = GetCryoLevel(lMeasuredFrequency);
 }
 
 // ------------------------------------------------------------------------------------------------
@@ -175,12 +175,12 @@ void ControlDiodeCheck(int gpio, int level, uint32_t tick)
    // if (bcm2835_gpio_lev(kGPIO_check_heater))
    if (level == 1)
    {// change to high (a rising edge)
-      printf("Clear\r\n");
+      //printf("Clear\r\n");
       fPowerModulStatus.sStatus.bControlDiodeError = FALSE;
    }
    else
    {
-      printf("Set\r\n");
+      //printf("Set\r\n");
       fPowerModulStatus.sStatus.bControlDiodeError = TRUE;
    }
 }

@@ -85,9 +85,9 @@ extern InputString_struct sInputString;
 extern fSystemThreadControl_Union fSystemThreadControl;
 
 extern boolean bCryoLevelMeasuring;
-extern uint16_t LowLevelFrequency ;
-extern uint16_t HighLevelFrequency;
-extern uint16_t MeasuredFrequency;
+extern uint32_t LowLevelFrequency ;
+extern uint32_t HighLevelFrequency;
+extern uint32_t MeasuredFrequency;
 extern uint32_t lCryoLevel;
 
 #endif /* INC_GLOBALVARHEADS_H_ */

@@ -305,7 +305,7 @@ void RestoreDefault(void)
    bCryoLevelMeasuring = Def_CryoLevelMeasuring;
    LowLevelFrequency   = Def_LowLevelFrequency;
    HighLevelFrequency  = Def_HighLevelFrequency;
-   bCelsiumOrKelvin      = Def_CelsiumOrKelvin;
+   bCelsiumOrKelvin    = Def_CelsiumOrKelvin;
 
 
 }

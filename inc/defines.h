@@ -132,9 +132,12 @@
 #define Def_Kint  (100)
 #define Def_Kdiff (1)
 #define Def_CryoLevelMeasuring (1)
-#define Def_LowLevelFrequency  (6000)
-#define Def_HighLevelFrequency (1000)
-#define Def_CelsiumOrKelvin    (1)
+
+#define Def_LowLevelFrequency  (671000uL)
+#define Def_HighLevelFrequency (100000uL)
+#define Def_HighLimitFrequence (1000000uL)// 1 MHz the highest possible frequency
+
+#define Def_CelsiumOrKelvin    (0)
 
 // File name for all configurations
 #define config_file "K45_settings.dat"
