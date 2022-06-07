@@ -14,5 +14,6 @@
 #define kTsetMax  mNormTemp((-20) + (kCelsiumShift))
 #define kTsetMin  mNormTemp((-180) + (kCelsiumShift))
 
+#define kCoefFrequency  256
 
 #endif /* USER_CONST_H_ */

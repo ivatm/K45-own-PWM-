@@ -56,9 +56,7 @@ void GoodbyeShow(void)
 // Code implementation ----------------------------------------------------------------------------------------------
 void lcd_Init(void)
 {
-#ifdef debugmode
-   //printf("Lets try to configure i2c lcd ...\n");
-#endif
+
    LCDI2C_init(LCD_Slave_Address, 20, 4);                             //Start I2C operations.
 
    // Initialization of data description of current lcd state
@@ -402,11 +400,7 @@ void ShowVariable(Display_Zone_struct* psDisplayStructData, display_zone_enum Di
 
       if (strcmp(psDisplayStructData->cDisplayedString, cString))
       {
-#ifdef debugmode
-         //printf("Zona %d Prefix %c%c%c%c Before --\r\n", DisplayZoneNumber,cString[0],cString[1],cString[2],cString[3]);
-         //ShowStringBytes(psDisplayStructData->cDisplayedString);
-         //ShowStringBytes(cString);
-#endif
+
 
          clearZone(DisplayZoneNumber);
          SetCursorInZone(DisplayZoneNumber, 0);
@@ -538,9 +532,6 @@ void GetStringOfVariable(Display_Zone_struct* psDisplayStructData, char* pOutStr
          lValueToIndicator = getMicroVoltsADC(lValueToIndicator);
          sprintf(String, "%.5f", ((float)((int32_t)lValueToIndicator)/1e6));
 
-         #ifdef debugmode
-         //printf(String);//printf("\n");
-         #endif // debugmode
          break;
 
       case keCLevel:
@@ -726,13 +717,6 @@ void WriteFullString(char* pString, uint16_t iFullLength)
    }
 
    *(pString + iStringOutLength) = '\0';
-
-#ifdef debugmode_str
-   for (iLocalWork = 0; iLocalWork < iFullLength; iLocalWork++)
-   {
-      //printf("%hhx",*(pString + iLocalWork));//printf(";");
-   }
-#endif // debugmode
 
 }
 

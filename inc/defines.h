@@ -133,7 +133,7 @@
 #define Def_Kdiff (1)
 #define Def_CryoLevelMeasuring (1)
 
-#define Def_LowLevelFrequency  (671000uL)
+#define Def_LowLevelFrequency  (900000uL)
 #define Def_HighLevelFrequency (100000uL)
 #define Def_HighLimitFrequence (1000000uL)// 1 MHz the highest possible frequency
 

@@ -15,6 +15,7 @@
 #include "defines.h"
 #include "globalvarheads.h"
 #include <bcm2835.h>
+#include "user_const.h"
 
 void FrequencyMeasurement(void);
 void ImpulsCounter(int gpio, int level, uint32_t tick);
@@ -130,6 +131,12 @@ void FrequencyMeasurement(void)
    {
       lMeasuredFrequency = 0;
    }
+
+   lMeasuredFrequency = lMeasuredFrequency * kCoefFrequency;
+
+   #ifdef debugmode
+      printf("Frequency = %d\r\n", lMeasuredFrequency);
+   #endif
 
    lCryoLevel = GetCryoLevel(lMeasuredFrequency);
 }

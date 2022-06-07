@@ -43,10 +43,6 @@ uint16_t TableLineInterpolation(float fXX, uint16_t* piPointNumber, uint16_t* pi
    // Get Micro volts in integer
    lXX = fXX * 1000000;
 
-#ifdef debugmode
-//   lXX = 1016711;
-#endif
-
    iIndex = 0;
    iFirstPoint = *piY_Points;
    iYStep = *(piY_Points + 1) - *piY_Points;

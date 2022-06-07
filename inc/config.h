@@ -10,7 +10,7 @@
 
 
 /*debugging_ivatm*/
-//#define debugmode
+#define debugmode
 
 
 /* -------------------------------------------------------

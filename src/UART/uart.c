@@ -308,10 +308,6 @@ int uart_read(void)
       {
          *pBufferWritePointer = *pReceivedDataPoiner;
 
-         #ifdef debugmode
-         //   printf("%d,", *pBufferWritePointer);
-         #endif
-
          if (pBufferWritePointer < &received_data[kBuff_In_Out_length - 1])
          {
             pBufferWritePointer++;
@@ -322,10 +318,6 @@ int uart_read(void)
          }
       }
       // its ok
-
-      #ifdef debugmode
-      // printf("\r\nReceived byte number = %d\r\n", rcount);
-      #endif
 
       return 0;
    }
@@ -485,14 +477,6 @@ boolean uart_data_receive(void)
       #endif
    }
 
-   #ifdef debugmode
-   //   if (pBufferReadPointer >= pBufferWritePointer)
-   //   {
-   //      printf("\r\n End telegram received!");
-   //   }
-   #endif
-
-
    return(bReceived);
 }
 
@@ -515,10 +499,6 @@ char GetNextChar(void)
    {
       pBufferReadPointer = &received_data[0];
    }
-
-   #ifdef debugmode
-   //   printf(" %d:", cReturn);
-   #endif // debugmode
 
    return(cReturn);
 

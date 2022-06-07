@@ -14,15 +14,12 @@ int uart_procedure(int argc, char* argv[])
 
     if (argc == 1)
     {
-#ifdef debugmode
-       //printf("UART ERROR Usage: %s [device]", argv[0]);
-#endif
-        return -1;
-    }
+       #ifdef debugmode
+          //printf("UART ERROR Usage: %s [device]", argv[0]);
+       #endif
 
-#ifdef debugmode
-    //printf("UART Opening %s", argv[1]);
-#endif // debugmode
+       return -1;
+    }
 
     int fd = open(argv[1], O_RDWR | O_NOCTTY | O_NDELAY);
 
