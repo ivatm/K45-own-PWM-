@@ -134,10 +134,6 @@ void FrequencyMeasurement(void)
 
    lMeasuredFrequency = lMeasuredFrequency * kCoefFrequency;
 
-   #ifdef debugmode
-      printf("Frequency = %d\r\n", lMeasuredFrequency);
-   #endif
-
    lCryoLevel = GetCryoLevel(lMeasuredFrequency);
 }
 

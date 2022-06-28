@@ -14,13 +14,13 @@
 				</extensions>
 			</storageModule>
 			<storageModule moduleId="cdtBuildSystem" version="4.0.0">
-				<configuration artifactName="${ProjName}" buildProperties="" description="" id="cdt.managedbuild.toolchain.gnu.mingw.base.1173757542" name="Default" optionalBuildProperties="org.eclipse.cdt.docker.launcher.containerbuild.property.volumes=,org.eclipse.cdt.docker.launcher.containerbuild.property.selectedvolumes=" parent="org.eclipse.cdt.build.core.emptycfg">
+				<configuration artifactName="${ProjName}" buildProperties="" description="" id="cdt.managedbuild.toolchain.gnu.mingw.base.1173757542" name="Default" parent="org.eclipse.cdt.build.core.emptycfg">
 					<folderInfo id="cdt.managedbuild.toolchain.gnu.mingw.base.1173757542.68964406" name="/" resourcePath="">
 						<toolChain id="cdt.managedbuild.toolchain.gnu.mingw.base.1006798590" name="MinGW GCC" superClass="cdt.managedbuild.toolchain.gnu.mingw.base">
 							<targetPlatform archList="all" binaryParser="org.eclipse.cdt.core.PE" id="cdt.managedbuild.target.gnu.platform.mingw.base.171243085" name="Debug Platform" osList="win32" superClass="cdt.managedbuild.target.gnu.platform.mingw.base"/>
 							<builder id="cdt.managedbuild.toolchain.gnu.mingw.base.1173757542.1583877427" keepEnvironmentInBuildfile="false" managedBuildOn="false" name="Gnu Make Builder" superClass="org.eclipse.cdt.build.core.settings.default.builder"/>
 							<tool id="cdt.managedbuild.tool.gnu.assembler.mingw.base.1837672904" name="GCC Assembler" superClass="cdt.managedbuild.tool.gnu.assembler.mingw.base">
-								<option IS_BUILTIN_EMPTY="false" IS_VALUE_EMPTY="false" id="gnu.both.asm.option.include.paths.1980496479" name="Include paths (-I)" superClass="gnu.both.asm.option.include.paths" valueType="includePath">
+								<option id="gnu.both.asm.option.include.paths.1980496479" name="Include paths (-I)" superClass="gnu.both.asm.option.include.paths" valueType="includePath">
 									<listOptionValue builtIn="false" value="&quot;F:\WORK\Infis\K45\Eclipse\Library_bcm2835-1.68&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;f:\WORK\Infis\K45\Eclipse\Library_bcm2835-1.68\src&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;C:\SysGCC\raspberry\arm-linux-gnueabihf\sysroot\usr\include&quot;"/>
@@ -30,17 +30,18 @@
 							<tool id="cdt.managedbuild.tool.gnu.archiver.mingw.base.962813060" name="GCC Archiver" superClass="cdt.managedbuild.tool.gnu.archiver.mingw.base"/>
 							<tool id="cdt.managedbuild.tool.gnu.cpp.compiler.mingw.base.278312355" name="GCC C++ Compiler" superClass="cdt.managedbuild.tool.gnu.cpp.compiler.mingw.base"/>
 							<tool id="cdt.managedbuild.tool.gnu.c.compiler.mingw.base.1180119709" name="GCC C Compiler" superClass="cdt.managedbuild.tool.gnu.c.compiler.mingw.base">
-								<option IS_BUILTIN_EMPTY="false" IS_VALUE_EMPTY="false" id="gnu.c.compiler.option.include.paths.727458079" name="Include paths (-I)" superClass="gnu.c.compiler.option.include.paths" useByScannerDiscovery="false" valueType="includePath">
-									<listOptionValue builtIn="false" value="&quot;F:\WORK\Infis\K45\Eclipse\Library_bcm2835-1.68&quot;"/>
-									<listOptionValue builtIn="false" value="&quot;f:\WORK\Infis\K45\Eclipse\Library_bcm2835-1.68\src&quot;"/>
-									<listOptionValue builtIn="false" value="&quot;C:\SysGCC\raspberry\arm-linux-gnueabihf\sysroot\usr\include&quot;"/>
+								<option id="gnu.c.compiler.option.include.paths.727458079" name="Include paths (-I)" superClass="gnu.c.compiler.option.include.paths" useByScannerDiscovery="false" valueType="includePath">
+									<listOptionValue builtIn="false" value="F:/WORK/Infis/K45/Eclipse/Library_bcm2835-1.68"/>
+									<listOptionValue builtIn="false" value="C:/SysGCC/raspberry/arm-linux-gnueabihf/sysroot/usr/include"/>
+									<listOptionValue builtIn="false" value="f:/WORK/Infis/K45/Eclipse/Library_bcm2835-1.68/src"/>
+									<listOptionValue builtIn="false" value="&quot;C:\SysGCC\pigpio-master&quot;"/>
 								</option>
 								<inputType id="cdt.managedbuild.tool.gnu.c.compiler.input.840050988" superClass="cdt.managedbuild.tool.gnu.c.compiler.input"/>
 							</tool>
 							<tool id="cdt.managedbuild.tool.gnu.c.linker.mingw.base.1261176582" name="MinGW C Linker" superClass="cdt.managedbuild.tool.gnu.c.linker.mingw.base">
-								<option IS_BUILTIN_EMPTY="false" IS_VALUE_EMPTY="false" id="gnu.c.link.option.paths.1137519427" name="Library search path (-L)" superClass="gnu.c.link.option.paths" valueType="libPaths">
+								<option id="gnu.c.link.option.paths.1137519427" name="Library search path (-L)" superClass="gnu.c.link.option.paths" valueType="libPaths">
 									<listOptionValue builtIn="false" value="f:/WORK/Infis/K45/Eclipse/Library_bcm2835-1.68"/>
-									<listOptionValue builtIn="false" value="&quot;C:\SysGCC\raspberry\arm-linux-gnueabihf\sysroot\usr\include&quot;"/>
+									<listOptionValue builtIn="false" value="C:/SysGCC/raspberry/arm-linux-gnueabihf/sysroot/usr/include"/>
 									<listOptionValue builtIn="false" value="C:/SysGCC/pigpio-master"/>
 								</option>
 								<inputType id="cdt.managedbuild.tool.gnu.c.linker.input.1769890777" superClass="cdt.managedbuild.tool.gnu.c.linker.input">

@@ -298,13 +298,13 @@ void* UARTCommThread_service()
 
          if (!uart_read())
          {
+            #ifdef debugmode
+              // printf(" Error on reception\r\n");
+            #endif
          }
          else
          {
-            #ifdef debugmode
-             //  printf(" Error on reception\r\n");
-            #endif
-            // Error on reception
+            // Its ok
          }
 
          uart_data_receive();

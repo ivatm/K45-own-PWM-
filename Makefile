@@ -63,6 +63,7 @@ OPTIMIZE_LEVEL			:= 2
 DEBUG_LEVEL				:= gdb
 
 TOOL_PATH				:= 'C:/SysGCC/raspberry/arm-linux-gnueabihf'
+PIGPIO_PATH				:= 'c:/SysGCC/pigpio-master'
 #SHELL						:= 'C:/MinGW/msys/1.0/bin/sh.exe'
 #--------------------------------------------------------------------------
 #	end user settings
@@ -95,7 +96,7 @@ SRC_ADC_DIR				:= ADC
 SRC_TEMPERCONTR_DIR	:= ThermoControlLibrary
 
 #VPATH						+= $(INC_DIR) $(OBJ_DIR) $(SRC_DIR)
-INCLUDE_PATH			:= $(INC) $(INC_DIR) $(COMM_INC_DIR) $(TOOL_PATH)/include
+INCLUDE_PATH			:= $(INC) $(INC_DIR) $(PIGPIO_PATH) $(COMM_INC_DIR) $(TOOL_PATH)/include
 #INCLUDE_PATH			+='C:/SysGCC/raspberry/arm-linux-gnueabihf/sysroot/usr/include'
 LIB_PATH					:= $(TOOL_PATH)/lib
 

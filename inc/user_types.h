@@ -125,6 +125,7 @@ typedef enum
    keSetFrequency_LowLevel  = 16, // On this command the measured frequency accords to 0 %
    keSetFrequency_HighLevel = 17, // On this command the measured frequency accords to 100 %
 
+   keNOP                    = 253, // Nothing to do - just life signal
    keRestoreDefault         = 254,
    keExit                   = 255,
    keUnknownCommand         = 0xFFFF,

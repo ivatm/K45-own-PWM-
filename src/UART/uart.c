@@ -184,34 +184,46 @@ int uart_send(void)
       }
    }
 
+
+#ifdef debugmode
+
+   printf("\r\nData Index = %d", iLocalIndex);
+
+#endif
+
    // States of controller
    buffer_out[iLocalIndex] = 0;
    if (bScanOrSetMode)
    {
       buffer_out[iLocalIndex] |= 1 << 0;
+      printf("\r\n Status On");
    }
 
    // Desired temperature achieved
    if (bTempSetAchieved)
    {
-      buffer_out[iLocalIndex] = 1 << 1;
+      buffer_out[iLocalIndex] |= 1 << 1;
    }
 
    // Temperature display mode
    if (bCelsiumOrKelvin)
    {
-      buffer_out[iLocalIndex] = 1 << 2;
+      buffer_out[iLocalIndex] |= 1 << 2;
+      printf("\r\n Celsius");
    }
 
    // the Cryolevel measurement foreseen
    if (bCryoLevelMeasuring)
    {
-      buffer_out[iLocalIndex] = 1 << 3;
+      buffer_out[iLocalIndex] |= 1 << 3;
+      printf("\r\n CryoLevel On");
    }
+   printf("\r\n Reg Status %d", buffer_out[iLocalIndex]);
    iLocalIndex++;
 
    // States of Co-Processor modul
    buffer_out[iLocalIndex++] = fPowerModulStatus.cStatusByte;
+   printf("\r\n Co Proc %d", fPowerModulStatus.cStatusByte);
 
    buffer_out[iLocalIndex++]='e';
    buffer_out[iLocalIndex++]='n';
@@ -404,11 +416,11 @@ boolean uart_data_receive(void)
                   eReadingState = eLookForStartTelegramm;
                   iError = 1;
                   #ifdef debugmode
-                  //   printf("\r\n sCommandStr.cLength = %d", sCommandStr.cLength);
-                  //   for (int i=0; i < sCommandStr.cLength; i++)
-                  //   {
-                  //      printf(":%d:", sCommandStr.cData[i]);
-                  //   }
+                     printf("\r\n sCommandStr.cLength = %d", sCommandStr.cLength);
+                     for (int i=0; i < sCommandStr.cLength; i++)
+                     {
+                        printf(":%d:", sCommandStr.cData[i]);
+                     }
                   #endif
                }
             }
@@ -429,6 +441,21 @@ boolean uart_data_receive(void)
          return(FALSE);
       }
 
+      #ifdef debugmode
+      if (sCommandStr.cComm != keNOP)
+      {
+         printf("\r\nReceived Data Length = %d", sCommandStr.cLength);
+         printf("\r\nReceived Command = %d\r\n", sCommandStr.cComm);
+
+         //printf("\r\nReceived Command = ");
+         for (int i=0; i < sCommandStr.cLength; i++)
+         {
+            printf("%d,", sCommandStr.cData[i]);
+         }
+         printf("\r\n");
+      }
+      #endif
+
       if (sCommandStr.cLength > 2)
       {
          sCommandStr.cLength = sCommandStr.cLength - 2;
@@ -448,21 +475,40 @@ boolean uart_data_receive(void)
          }
       }
 
+#ifdef debugmode
+if (sCommandStr.cComm != keNOP)
+{
+   printf("\r\n After Data Length = %d", sCommandStr.cLength);
+   printf("\r\n After Command = %d\r\n", sCommandStr.cComm);
+
+   //printf("\r\nReceived Command = ");
+   for (int i=0; i < sCommandStr.cLength; i++)
+   {
+      printf("%d,", sCommandStr.cData[i]);
+   }
+   printf("\r\n");
+}
+#endif
+
+
       // Telegram successfully received
       (void)DataProcess(&sCommandStr);
       // Next command reception
       bReceived = TRUE;
 
       #ifdef debugmode
-      //   printf("\r\nReceived Data Length = %d", sCommandStr.cLength);
-      //   printf("\r\nReceived Command = %d\r\n", sCommandStr.cComm);
-      //
-      //   //printf("\r\nReceived Command = ");
-      //   for (int i=0; i < sCommandStr.cLength; i++)
-      //   {
-      //      printf("%d,", sCommandStr.cData[i]);
-      //   }
-      //   printf("\r\n");
+      if (sCommandStr.cComm != keNOP)
+      {
+         printf("\r\nReceived Data Length = %d", sCommandStr.cLength);
+         printf("\r\nReceived Command = %d\r\n", sCommandStr.cComm);
+
+         //printf("\r\nReceived Command = ");
+         for (int i=0; i < sCommandStr.cLength; i++)
+         {
+            printf("%d,", sCommandStr.cData[i]);
+         }
+         printf("\r\n");
+      }
       #endif
    }
    else
@@ -550,6 +596,7 @@ uint16_t DataProcess(sComm_full_structure* psDataToProcess)
 
          lDelta_T = lOutValue;
          break;
+
       case ketime_step_input:
          printf("Command time step\r\n");
          lOutValue = (uint32_t)psDataToProcess->cData[0] | (uint32_t)(psDataToProcess->cData[1] << 8);
@@ -574,8 +621,8 @@ uint16_t DataProcess(sComm_full_structure* psDataToProcess)
       case keKprop_input:
          printf("Command Kprop\r\n");
          lOutValue = (uint32_t)psDataToProcess->cData[0] | (uint32_t)(psDataToProcess->cData[1] << 8);
-         lMin = VarForIndication[keDeltat].lVarMin;
-         lMax = VarForIndication[keDeltat].lVarMax;
+         lMin = VarForIndication[keKprop].lVarMin;
+         lMax = VarForIndication[keKprop].lVarMax;
 
          if (lOutValue > lMax)
          {
@@ -594,8 +641,8 @@ uint16_t DataProcess(sComm_full_structure* psDataToProcess)
       case keKdiff_input:
          printf("Command Kdiff\r\n");
          lOutValue = (uint32_t)psDataToProcess->cData[0] | (uint32_t)(psDataToProcess->cData[1] << 8);
-         lMin = VarForIndication[keDeltat].lVarMin;
-         lMax = VarForIndication[keDeltat].lVarMax;
+         lMin = VarForIndication[keKdiff].lVarMin;
+         lMax = VarForIndication[keKdiff].lVarMax;
 
          if (lOutValue > lMax)
          {
@@ -615,6 +662,8 @@ uint16_t DataProcess(sComm_full_structure* psDataToProcess)
          if (psDataToProcess->cData[0])
          {
             bScanOrSetMode = TRUE;
+            printf("Command Kdiff\r\n");
+
          }
          else
          {
@@ -623,14 +672,7 @@ uint16_t DataProcess(sComm_full_structure* psDataToProcess)
          break;
 
       case keTemperatureUnitSwitch:
-         if (psDataToProcess->cData[0])
-         {
-            bCelsiumOrKelvin = TRUE;
-         }
-         else
-         {
-            bCelsiumOrKelvin = FALSE;
-         }
+            bCelsiumOrKelvin = !bCelsiumOrKelvin;
          break;
 
       case keSaveConfigs:

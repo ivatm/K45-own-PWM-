@@ -48,9 +48,9 @@ int fd_PC_Communication;
 // Type define
 typedef struct
 {
-   uint8_t cComm;      // Command
-   uint8_t cLength;    // Number of byte
-   uint8_t cData[kCommand_length];  // Data not longer then 10 byte
+   uint8_t cComm;                   // Command
+   uint8_t cLength;                 // Number of byte
+   uint8_t cData[kCommand_length];  // All received bytes. Data not longer then 10 byte
 } sComm_full_structure;
 
 typedef enum
