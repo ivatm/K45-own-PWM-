@@ -15,13 +15,13 @@
 #include "defines.h"
 #include "globalvarheads.h"
 #include <bcm2835.h>
-#include "user_const.h"
 
 void FrequencyMeasurement(void);
 void ImpulsCounter(int gpio, int level, uint32_t tick);
 void HeaterCheck(int gpio, int level, uint32_t tick);
 void CoolerCheck(int gpio, int level, uint32_t tick);
 void ControlDiodeCheck(int gpio, int level, uint32_t tick);
+void CurentStatusUpdate(void);
 
 int PigpioInit(void);
 
@@ -43,20 +43,20 @@ int PigpioInit(void)
 
    if (gpioInitialise()<0) return 1;
 
-   // if (gpioRead(fPowerModulStatus.sStatus.bHeaterError ))
+   // if (gpioRead(fModulStatusByte1.sStatus.bHeaterError ))
    if (bcm2835_gpio_lev(kGPIO_check_diode))
    {
-      fPowerModulStatus.sStatus.bControlDiodeError = TRUE;
+      fModulStatusByte1.sStatus.bControlDiodeError = TRUE;
    }
 
    if (bcm2835_gpio_lev(kGPIO_check_heater))
    {
-      fPowerModulStatus.sStatus.bHeaterError  = TRUE;
+      fModulStatusByte1.sStatus.bHeaterError  = TRUE;
    }
 
    if (bcm2835_gpio_lev(kGPIO_check_cooler))
    {
-      fPowerModulStatus.sStatus.bCoolerError  = TRUE;
+      fModulStatusByte1.sStatus.bCoolerError  = TRUE;
    }
 
    // Frequency measurement.
@@ -146,11 +146,11 @@ void HeaterCheck(int gpio, int level, uint32_t tick)
 
    if (level == 1)
    { // change to high (a rising edge)
-      fPowerModulStatus.sStatus.bHeaterError  = FALSE;
+      fModulStatusByte1.sStatus.bHeaterError  = FALSE;
    }
    else
    {
-      fPowerModulStatus.sStatus.bHeaterError  = TRUE;
+      fModulStatusByte1.sStatus.bHeaterError  = TRUE;
    }
 }
 
@@ -162,11 +162,11 @@ void CoolerCheck(int gpio, int level, uint32_t tick)
    //if (bcm2835_gpio_lev(kGPIO_check_cooler))
    if (level == 1)
    {// change to high (a rising edge)
-      fPowerModulStatus.sStatus.bCoolerError  = FALSE;
+      fModulStatusByte1.sStatus.bCoolerError  = FALSE;
    }
    else
    {
-      fPowerModulStatus.sStatus.bCoolerError  = TRUE;
+      fModulStatusByte1.sStatus.bCoolerError  = TRUE;
    }
 }
 
@@ -179,16 +179,28 @@ void ControlDiodeCheck(int gpio, int level, uint32_t tick)
    if (level == 1)
    {// change to high (a rising edge)
       //printf("Clear\r\n");
-      fPowerModulStatus.sStatus.bControlDiodeError = FALSE;
+      fModulStatusByte1.sStatus.bControlDiodeError = FALSE;
    }
    else
    {
       //printf("Set\r\n");
-      fPowerModulStatus.sStatus.bControlDiodeError = TRUE;
+      fModulStatusByte1.sStatus.bControlDiodeError = TRUE;
    }
 }
 
 void ControlVoltagesCheck(void)
 {
    // ???
+}
+
+/* ----------------------------------------------
+ *
+ * ---------------------------------------------- */
+void CurentStatusUpdate(void)
+{
+   fModulStatusByte2.sStatus.bScanOrSetMode      = bScanOrSetMode;
+   fModulStatusByte2.sStatus.bTempSetAchieved    = bTempSetAchieved;
+   fModulStatusByte2.sStatus.bCelsiumOrKelvin    = bCelsiumOrKelvin;
+   fModulStatusByte2.sStatus.bCryoLevelMeasuring = bCryoLevelMeasuring;
+   fModulStatusByte2.sStatus.bFree = 0;
 }

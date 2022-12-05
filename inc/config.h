@@ -12,6 +12,11 @@
 /*debugging_ivatm*/
 #define debugmode
 
+/* -------------------------------------------------------
+ * Raspberry native PWM
+   -------------------------------------------------------*/
+#define gdb_DEBUG_config (1)
+
 
 /* -------------------------------------------------------
  * Definition of interpolation type

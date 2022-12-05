@@ -46,12 +46,13 @@ void PWM_set(uint16_t wChannelNumber, uint16_t wValue);
 int PWM_init(void)
 {
    boolean Result;
+   int i;
 
    Result = TRUE;
    // Clock divider is set to
    bcm2835_pwm_set_clock(PWM_divider);
 
-   for (uint16_t i = 0; i < kPWMAmount; i++)
+   for (i = 0; i < kPWMAmount; i++)
    {
       if (PWMConfs[i].bNativeOrNot)
       {

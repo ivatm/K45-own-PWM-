@@ -117,6 +117,7 @@ static void SetCursorInZone(display_zone_enum DisplayZoneNumber, uint16_t ShiftI
          else
          {
             // should be an error !
+            row = 2;
          }
       }
    }
@@ -254,7 +255,7 @@ void ShowScanOrSetMode(Display_Zone_struct* psDisplayStructData, display_zone_en
 void ShowErrorExecutivePlate(Display_Zone_struct* psDisplayStructData, display_zone_enum DisplayZoneNumber)
 {
 
-   sStatus_Struct  sPowerModulState;
+   sStatusByte1_Struct  sModulStatus1State;
    static eError_ToShow_enum eError_ToShow;
    boolean bNeedsToShow;
    uint16_t i;
@@ -279,7 +280,7 @@ void ShowErrorExecutivePlate(Display_Zone_struct* psDisplayStructData, display_z
       }
       else
       {
-         sPowerModulState = fPowerModulStatus.sStatus;
+         sModulStatus1State = fModulStatusByte1.sStatus;
          bNeedsToShow = FALSE;
 
          for (i = 0; (i < keErrorStateNumber)&&(!bNeedsToShow); i++)
@@ -292,28 +293,28 @@ void ShowErrorExecutivePlate(Display_Zone_struct* psDisplayStructData, display_z
             switch (eError_ToShow)
             {
                case keHeaterVoltage:
-                  if (sPowerModulState.bHeaterError )
+                  if (sModulStatus1State.bHeaterError )
                   {
                      bNeedsToShow = TRUE;
                      LCDI2C_write_String("Err!Heater");
                   }
                   break;
                case keCoolerVoltage:
-                  if (sPowerModulState.bCoolerError )
+                  if (sModulStatus1State.bCoolerError )
                   {
                      bNeedsToShow = TRUE;
                      LCDI2C_write_String("Err!Cooler");
                   }
                   break;
                case keControlDiodeVoltage:
-                  if (sPowerModulState.bControlDiodeError)
+                  if (sModulStatus1State.bControlDiodeError)
                   {
                      bNeedsToShow = TRUE;
                      LCDI2C_write_String("Err!Diode ");
                   }
                   break;
                case kePowerPlateError:
-                  if (sPowerModulState.bNotFoundErr)
+                  if (sModulStatus1State.bNotFoundErr)
                   {
                      bNeedsToShow = TRUE;
                      LCDI2C_write_String("Err!PowPl");

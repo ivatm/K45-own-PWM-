@@ -66,7 +66,9 @@ extern boolean            bTempSetAchieved;    // Desired temperature set
  * Common mode/state determining
  * --------------------------------------------------- */
 // Received values from PowerModule
-extern fStatusUnion       fPowerModulStatus;
+extern fStatusByte1_Union       fModulStatusByte1;
+extern fStatusByte2_Union       fModulStatusByte2;
+
 extern uint16_t           HeaterVoltage;
 extern uint16_t           CoolerVoltage;
 extern uint16_t           ControlDiodeVoltage;

@@ -1,7 +1,7 @@
 /*
  * globalvardefs.c
  *
- *  Created on: 20 груд. 2020 р.
+ *  Created on: 20 ????. 2020 ?.
  *      Author: Oliva
  */
 
@@ -66,7 +66,9 @@ boolean            bTempSetAchieved;    // Desired temperature set
  * Common mode/state determining
  * --------------------------------------------------- */
 // Received values from PowerModule
-fStatusUnion       fPowerModulStatus;
+fStatusByte1_Union   fModulStatusByte1;
+fStatusByte2_Union   fModulStatusByte2;
+
 uint16_t           HeaterVoltage,
                    CoolerVoltage,
                    ControlDiodeVoltage;
@@ -84,8 +86,8 @@ fSystemThreadControl_Union fSystemThreadControl;
 // Flag of possibility to measure the cryoliquid. If TRUE - the measured value will be indicated
 
 boolean  bCryoLevelMeasuring = Def_CryoLevelMeasuring;
-uint32_t LowLevelFrequency  = Def_LowLevelFrequency;  // The frequency in kHz according to 0% of level
-uint32_t HighLevelFrequency = Def_HighLevelFrequency; // The frequency in kHz according to 100% of level
+uint32_t LowLevelFrequency   = Def_LowLevelFrequency;  // The frequency in kHz according to 0% of level
+uint32_t HighLevelFrequency  = Def_HighLevelFrequency; // The frequency in kHz according to 100% of level
 uint32_t MeasuredFrequency;                           // This value will be admittedly received from CoProcessor
 // Cryo-liquid measuring
 uint32_t lCryoLevel; // %

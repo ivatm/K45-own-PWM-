@@ -16,4 +16,11 @@
 
 #define kCoefFrequency  256
 
+// File names
+#define TMH_file_common "sensor.out"
+//#define TMH_file_common_debug "//home//pi//sensorData.dbg"
+#define TMH_file_common_bak "sensor.bak"
+#define TMH_file "KV188.OUT"
+#define Received_TMH_file "//var//tmp//temp.OUT"
+
 #endif /* USER_CONST_H_ */

@@ -755,6 +755,12 @@ void PerceiveInputCommand(void)
          }
          break;
 
+      case keSendSensor:
+         break;
+
+      case keSensorComplete:
+         break;
+
       case keRestoreDefault:
          RestoreDefault();
          break;

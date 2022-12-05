@@ -1,7 +1,7 @@
 /*
  * user_types.h
  *
- *  Created on: 20 груд. 2020 р.
+ *  Created on: 20 пїЅпїЅпїЅпїЅ. 2020 пїЅ.
  *      Author: Oliva
  */
 
@@ -71,28 +71,28 @@ typedef union
 typedef enum
 {
    // According values were received experimental on the dedicated connection
-   keNothingPressed = 0,
-   ke_F1            = 102,
-   ke_F2            = 70,
-   keSharp          = 35,
-   keStar           = 42,
-   ke_1             = 49,
-   ke_2             = 50,
-   ke_3             = 51,
-   ke_4             = 52,
-   ke_5             = 53,
-   ke_6             = 54,
-   ke_7             = 55,
-   ke_8             = 56,
-   ke_9             = 57,
-   ke_0             = 48,
-   ke_Up            = 94,
-   ke_Down          = 95,
-   ke_Left          = 60,
-   ke_Right         = 62,
-   ke_Enter         = 69,
-   ke_Esc           = 99,
-   ke_ButtonUnknown = 255,
+   keNothingPressed  = 0,
+   ke_F1             = 102,
+   ke_F2             = 70,
+   keSharp           = 35,
+   keStar            = 42,
+   ke_1              = 49,
+   ke_2              = 50,
+   ke_3              = 51,
+   ke_4              = 52,
+   ke_5              = 53,
+   ke_6              = 54,
+   ke_7              = 55,
+   ke_8              = 56,
+   ke_9              = 57,
+   ke_0              = 48,
+   ke_Up             = 94,
+   ke_Down           = 95,
+   ke_Left           = 60,
+   ke_Right          = 62,
+   ke_Enter          = 69,
+   ke_Esc            = 99,
+   ke_ButtonUnknown  = 255,
 } Buttons_enum;
 
 /* -------------------------------------------------------
@@ -125,6 +125,10 @@ typedef enum
    keSetFrequency_LowLevel  = 16, // On this command the measured frequency accords to 0 %
    keSetFrequency_HighLevel = 17, // On this command the measured frequency accords to 100 %
 
+   // Commands for Sensor transmition
+   keSendSensor     = 100, // Command for a line transmitting. Subcommand is the number. If 0 - start initialization
+   keSensorComplete = 101,
+
    keNOP                    = 253, // Nothing to do - just life signal
    keRestoreDefault         = 254,
    keExit                   = 255,
@@ -133,5 +137,18 @@ typedef enum
 
 // the possible length of a command
 #define kComLength 10
+
+/* -------------------------------------------------------
+ * The list of states during a file reception
+ * ToDo: not realized yet 
+ * ------------------------------------------------------- */
+typedef enum
+{
+   keSendCommandWait   = 0,
+   keFileTransmitting  = 1,
+   keFileCoping        = 2,
+   keFileTransmitError = 3,
+   keFileCopyError     = 4
+} FileReceiveStates_enum;
 
 #endif /* INC_USER_TYPES_H_ */

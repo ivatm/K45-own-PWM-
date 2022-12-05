@@ -5,8 +5,8 @@
  *      Author: Oliva
  */
 
+#include <ads1256.h>
 #include "ThermoControlHeaders.h"
-#include "ADS1256.h"
 #include <stdio.h>
 #include <pthread.h>
 #include "user_types.h"

@@ -1,14 +1,14 @@
 /*
  * SPI1.c
  *
- *  Created on: 1 זמגע. 2020 נ.
+ *  Created on: 1 ????. 2020 ?.
  *      Author: Oliva
  */
 
+#include <ads1256.h>
 #include <stdlib.h>
 #include <signal.h>
 #include <time.h>
-#include "ADS1256.h"
 #include "stdio.h"
 #include <time.h>
 #include <string.h>

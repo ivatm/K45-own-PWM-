@@ -391,7 +391,7 @@
   and a busy wait on a high resolution timer for the rest. This is because
   I've found that calling nanosleep() takes at least 100-200 us.
   You need to link using '-lrt' using this version.
-  I've added some unsigned casts to the debug prints to silence compiler
+  I've added some unsigned casts to the gdb_DEBUG prints to silence compiler
   warnings I was getting, fixed some typos, and changed the value of
   BCM2835_PAD_HYSTERESIS_ENABLED to 0x08 as per Gert van Loo's doc at
   http://www.scribd.com/doc/101830961/GPIO-Pads-Control2
@@ -494,7 +494,7 @@
   Fixed a number of compiler errors and warnings that occur when bcm2835.h is included
   in code compiled with -Wall -Woverflow -Wstrict-overflow -Wshadow -Wextra -pedantic.
   Reported by tlhackque.<br>
-  Fixed a problem where calling bcm2835_delayMicroseconds loops forever when debug is set. Reported by tlhackque.<br>
+  Fixed a problem where calling bcm2835_delayMicroseconds loops forever when gdb_DEBUG is set. Reported by tlhackque.<br>
   Reinstated use of volatile in 2 functions where there was a danger of lost reads or writes. Reported by tlhackque.<br>
   
   \version 1.41 Added BCM2835_VERSION macro and new function bcm2835_version(); Requested by tlhackque.<br>
@@ -1295,14 +1295,14 @@ extern "C" {
     */
     extern int bcm2835_close(void);
 
-    /*! Sets the debug level of the library.
+    /*! Sets the gdb_DEBUG level of the library.
       A value of 1 prevents mapping to /dev/mem, and makes the library print out
       what it would do, rather than accessing the GPIO registers.
       A value of 0, the default, causes normal operation.
       Call this before calling bcm2835_init();
-      \param[in] debug The new debug level. 1 means debug
+      \param[in] gdb_DEBUG The new gdb_DEBUG level. 1 means gdb_DEBUG
     */
-    extern void  bcm2835_set_debug(uint8_t debug);
+    extern void  bcm2835_set_debug(uint8_t gdb_DEBUG);
 
     /*! Returns the version number of the library, same as BCM2835_VERSION
        \return the current library version number

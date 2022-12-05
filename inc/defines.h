@@ -8,6 +8,7 @@
 
 // Includs -----------------------------------------------------
 #include "incs.h"
+#include "user_const.h"
 
 // Common defines
 #define boolean uint16_t

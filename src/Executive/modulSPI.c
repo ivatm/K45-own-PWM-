@@ -17,7 +17,7 @@
 #include "defines.h"
 #include "ThermoControlHeaders.h"
 #include "globalvarheads.h"
-#include "PWMDefines.h"
+#include "PWMdefines.h"
 
 // extern procedure ---------------------------------------------------------------------------
 
@@ -78,13 +78,14 @@ uint8_t transferAndWait(const uint8_t what)
 void transferMsG(uint8_t* pMsgRec , uint8_t* pMsgTr)
 {
   bcm2835_gpio_clr(MODUL_ISP_PIN);
+  int Index;
 
   (void)transferAndWait(*pMsgTr); // First uint8_t without receiving
 
   //Serial.print(*pMsgTr); Serial.print("; "); Serial.println(*pMsgRec);
 ///  delay (1);
   pMsgTr++;
-  for (uint8_t Index = 1; Index < kMsgLength; Index++, pMsgRec++, pMsgTr++)
+  for (Index = 1; Index < kMsgLength; Index++, pMsgRec++, pMsgTr++)
   {
     *pMsgRec = transferAndWait(*pMsgTr);
     //Serial.print(*pMsgTr); Serial.print("; "); Serial.println(*pMsgRec);
@@ -116,7 +117,7 @@ boolean setExecuteModule(void)
    #ifdef RASPBERRY_PWM
 
    #ifndef NO_CONTROL_LEVELS
-      if (fPowerModulStatus.cStatusByte)
+      if (fModulStatusByte1.cStatusByte)
       {
          PWM_set(cooler_PWM_CHANNEL, 0);
          PWM_set(heater_PWM_CHANNEL, 0);
@@ -182,10 +183,10 @@ boolean setExecuteModule(void)
          }
          //printf("\r\n");
 
-         //printf("SetMode = %hhx\r\n",fPowerModulStatus.sStatus.bSetMode);
-         //printf("bHeaterError  = %hhx\r\n",fPowerModulStatus.sStatus.bHeaterError );
-         //printf("bCoolerError  = %hhx\r\n",fPowerModulStatus.sStatus.bCoolerError );
-         //printf("bControlDiodeError = %hhx\r\n",fPowerModulStatus.sStatus.bControlDiodeError);
+         //printf("SetMode = %hhx\r\n",fModulStatusByte1.sStatus.bSetMode);
+         //printf("bHeaterError  = %hhx\r\n",fModulStatusByte1.sStatus.bHeaterError );
+         //printf("bCoolerError  = %hhx\r\n",fModulStatusByte1.sStatus.bCoolerError );
+         //printf("bControlDiodeError = %hhx\r\n",fModulStatusByte1.sStatus.bControlDiodeError);
 
       #endif
    #endif
@@ -197,7 +198,7 @@ boolean ProcessReceived(fExecutive_RxObj_Union* pReceivedObject)
 {
    boolean Result;
    uint16_t ReceivedCheckSum;
-   fStatusUnion fLocalStatusVar;
+   fStatusByte1_Union fLocalStatusVar;
 
    ReceivedCheckSum = Rx_CheckSumCalcul(pReceivedObject);
 
@@ -217,7 +218,7 @@ boolean ProcessReceived(fExecutive_RxObj_Union* pReceivedObject)
       fLocalStatusVar.sStatus.bNotFoundErr = TRUE;
    }
 
-   fPowerModulStatus = fLocalStatusVar;
+   fModulStatusByte1 = fLocalStatusVar;
 
    return(Result);
 }

@@ -22,23 +22,24 @@
 // UART Definitions
 // B0,    B50,   B75,   B110,   B134,   B150,   B200,    B300,    B600, B1200, B1800,
 // B2400, B4800, B9600, B19200, B38400, B57600, B115200, B230400, B460800
-#define kBoadRate_Default   B9600
-#define kBuffInput_length   255
-#define kBuff_In_Out_length 100
-#define kCommand_length     10
+#define kBoadRate_Default            B9600
+#define kBuffInput_length            255
+#define kBuff_In_Out_length          200
+#define kCommand_length              11
+#define kSensor_Data_Command_length  100
 
 // The general terminal interface that
 // is provided to control asynchronous communications ports
 struct termios serial;
 
 // Allocate memory for In/Out string.
-char buffer_out[kBuff_In_Out_length];
-char received_data[kBuff_In_Out_length];
+uint8_t buffer_out[kBuff_In_Out_length];
+uint8_t received_data[kBuff_In_Out_length];
 
 // Allocate memory for read buffer, set size according to your needs
-char buffer_in[kBuffInput_length];
-char* pBufferWritePointer;
-char* pBufferReadPointer;
+uint8_t buffer_in[kBuffInput_length];
+uint8_t* pBufferWritePointer;
+uint8_t* pBufferReadPointer;
 
 uint16_t ByteSReceived;
 
@@ -50,7 +51,7 @@ typedef struct
 {
    uint8_t cComm;                   // Command
    uint8_t cLength;                 // Number of byte
-   uint8_t cData[kCommand_length];  // All received bytes. Data not longer then 10 byte
+   uint8_t cData[kSensor_Data_Command_length];  // All received bytes. Data not longer then 10 byte
 } sComm_full_structure;
 
 typedef enum
@@ -59,6 +60,23 @@ typedef enum
    eReadingCommand,
    eReadingTelegramm,
 } CommunicationState_enum;
+
+/* --------------------------------------------------------------------
+ * List of all K45 to PC answers.
+ * It is used in UART communication
+ -------------------------------------------------------------------- */
+typedef enum
+{
+   keSimpleTelegram     = 0,
+   keSensorLineReceived = 1
+} K45Commands_enum;
+
+/* --------------------------------------------------------------------
+ * UART Error codes
+ -------------------------------------------------------------------- */
+#define kErrTelLength 1
+#define kErrCommand   2
+#define kErrChecksum  3
 
 
 #endif /* INC_UART_H_ */

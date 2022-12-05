@@ -1,10 +1,10 @@
 /*****************************************************************************
-* | File      	:   ADS1256.c
+* | File         :   ADS1256.c
 * | Author      :   Waveshare team
 * | Function    :   ADS1256 driver
 * | Info        :
 *----------------
-* |	This version:   V1.0
+* |   This version:   V1.0
 * | Date        :   2019-03-25
 * | Info        :
 # 
@@ -27,7 +27,7 @@
 # THE SOFTWARE.
 #
 ******************************************************************************/
-#include "ADS1256.h"
+#include <ads1256.h>
 #include <time.h>
 #include "globalvarheads.h"
 
@@ -105,18 +105,27 @@ Info:
 ******************************************************************************/
 static boolean ADS1256_WaitDRDY(void)
 {   
-    UDOUBLE i = 0;
-    for(i=0;i<400000000;i++){
-        if(DEV_Digital_Read(DEV_DRDY_PIN) == 0)
-            break;
-    }
-    if(i >= 400000000){
-       printf("Time Out ...\r\n");
-       return(FALSE);
-    }
-    else{
-       return(TRUE);
-    }
+   // In dbg Debugging simply return
+   #if (!gdb_DEBUG_config)
+       UDOUBLE i = 0;
+       for (i=0;i<400000000;i++)
+       {
+           if (DEV_Digital_Read(DEV_DRDY_PIN) == 0)
+           {
+              break;
+           }
+       }
+
+       if (i >= 400000000)
+       {
+          printf("Time Out ...\r\n");
+          return(FALSE);
+       }
+       else
+   #endif
+       {
+          return(TRUE);
+       }
 }
 
 /******************************************************************************
@@ -176,16 +185,16 @@ static void ADS1256_SetChannal(UBYTE Channal)
 void ADS1256_SetDiffChannal(UBYTE Channal)
 {
     if (Channal == 0){
-        ADS1256_WriteReg(REG_MUX, (0 << 4) | 1);	//DiffChannal  AIN0-AIN1
+        ADS1256_WriteReg(REG_MUX, (0 << 4) | 1);   //DiffChannal  AIN0-AIN1
     }
     else if(Channal == 1){
-        ADS1256_WriteReg(REG_MUX, (2 << 4) | 3);	//DiffChannal   AIN2-AIN3
+        ADS1256_WriteReg(REG_MUX, (2 << 4) | 3);   //DiffChannal   AIN2-AIN3
     }
     else if(Channal == 2){
-        ADS1256_WriteReg(REG_MUX, (4 << 4) | 5); 	//DiffChannal    AIN4-AIN5
+        ADS1256_WriteReg(REG_MUX, (4 << 4) | 5);    //DiffChannal    AIN4-AIN5
     }
     else if(Channal == 3){
-        ADS1256_WriteReg(REG_MUX, (6 << 4) | 7); 	//DiffChannal   AIN6-AIN7
+        ADS1256_WriteReg(REG_MUX, (6 << 4) | 7);    //DiffChannal   AIN6-AIN7
     }
 }
 
@@ -281,42 +290,45 @@ UDOUBLE ADS1256_GetChannalValue(UBYTE Channel)
 
    static boolean bLocalFlag;
 
-    UDOUBLE Value = 0;
-    while(DEV_Digital_Read(DEV_DRDY_PIN) == 1)
-       ;
+   UDOUBLE Value = 0;
+   while(DEV_Digital_Read(DEV_DRDY_PIN) == 1)
+      ;
 
+   if (ScanMode == 0)
+   {
+      // 0  Single-ended input  8 channel1 Differential input  4 channe
+       if (Channel>=8)
+       {
+           return 0;
+       }
 
-    if (ScanMode == 0)
-    {// 0  Single-ended input  8 channel1 Differential input  4 channe
-        if(Channel>=8){
-            return 0;
-        }
-        ADS1256_SetChannal(Channel);
-        ADS1256_WriteCmd(CMD_SYNC);
-        ADS1256_WriteCmd(CMD_WAKEUP);
-        Value = ADS1256_Read_ADC_Data();
-    }
-    else
-    {
-        if(Channel>=4){
-            return 0;
-        }
+       ADS1256_SetChannal(Channel);
+       ADS1256_WriteCmd(CMD_SYNC);
+       ADS1256_WriteCmd(CMD_WAKEUP);
+       Value = ADS1256_Read_ADC_Data();
+   }
+   else
+   {
+      if (Channel>=4)
+      {
+          return 0;
+      }
 
-        if (!bLocalFlag)
-        {
-           ADS1256_SetDiffChannal(Channel);
-           bLocalFlag = TRUE;
-           delay(3);
-           ADS1256_WriteCmd(CMD_SYNC);
-           delay(1);
-        }
-        ADS1256_WriteCmd(CMD_WAKEUP);
-        delay(3);
+      if (!bLocalFlag)
+      {
+         ADS1256_SetDiffChannal(Channel);
+         bLocalFlag = TRUE;
+         delay(3);
+         ADS1256_WriteCmd(CMD_SYNC);
+         delay(1);
+      }
+      ADS1256_WriteCmd(CMD_WAKEUP);
+      delay(3);
 
-        Value = ADS1256_Read_ADC_Data();
+      Value = ADS1256_Read_ADC_Data();
+   }
 
-    }
-    return Value;
+   return Value;
 }
 
 /******************************************************************************

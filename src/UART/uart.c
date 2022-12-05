@@ -10,13 +10,20 @@ extern void ADC_service(void);
 extern void ShowSensor(void);
 extern void K45_Exit(uint16_t iReason);
 
+// Sensor data receive
+extern boolean appendSensReceivedLine(uint16_t ReceivedLineNumber, char* pcLine);
+extern int completeSensDataFile(void);
+
+
 // Local variables -----------------------------------------------------------------
 // static pthread_mutex_t uart_lock = PTHREAD_MUTEX_INITIALIZER;
 
 
-// -----------------------------------------------------
-char GetNextChar(void);
+// Local functions -----------------------------------------------------
+uint8_t GetNextChar(void);
 uint16_t DataProcess(sComm_full_structure* sDataToProcess);
+uint8_t getCheckSum(uint8_t* pcBuff, uint16_t wLength);
+boolean checkCheckSum(uint8_t* pcBuff, uint16_t wLength, uint8_t cCheckSum);
 // -----------------------------------------------------
 
 
@@ -49,7 +56,7 @@ int uart_init(void)
 
 
    /*
-    * Let’s explore the different combinations:
+    * Letï¿½s explore the different combinations:
       VMIN = 0, VTIME = 0: No blocking, return immediately with what is available
       VMIN > 0, VTIME = 0: This will make read() always wait for bytes
                            (exactly how many is determined by VMIN), so read() could block indefinitely.
@@ -98,158 +105,173 @@ int uart_send(void)
    uint32_t lValueToTransmit;
    uint16_t iLocalIndex;
    uint16_t iValueToUart;
+   int i;
 
-   iLocalIndex = 0;
-   buffer_out[iLocalIndex++]='b';
-   buffer_out[iLocalIndex++]='e';
-   buffer_out[iLocalIndex++]='g';
-
-   for (eVarNumber = keTreal; eVarNumber < keMaxVariableNum; eVarNumber++)
+   //Transmit only when received
+   if (fModulStatusByte2.sStatus.bUARTMsgReceived)
    {
-      lValueToTransmit = *VarForIndication[eVarNumber].plVarValue;
-
-      switch(eVarNumber)
+      if (fModulStatusByte2.sStatus.bUARTSensorReception)
       {
-         case keTreal:
-         case keTset:
-         case keTcurSet:
-         case keDeltaT:
-            iValueToUart = (uint16_t)lValueToTransmit; // K = 0.01
+         iLocalIndex = 0;
+         buffer_out[iLocalIndex++]='b';
+         buffer_out[iLocalIndex++]='e';
+         buffer_out[iLocalIndex++]='g';
 
-            buffer_out[iLocalIndex++] = iValueToUart;
-            buffer_out[iLocalIndex++] = iValueToUart >> 8;
+         buffer_out[iLocalIndex++] = keSensorLineReceived;
 
-            break;
+         uint8_t cLocalWork = getCheckSum(&buffer_out[0], iLocalIndex);
+         // Add checksum
+         buffer_out[iLocalIndex++] = cLocalWork;
 
-         case keDeltat:
-            iValueToUart = (uint16_t)lValueToTransmit; // K = 0.001
+         buffer_out[iLocalIndex++]='e';
+         buffer_out[iLocalIndex++]='n';
+         buffer_out[iLocalIndex++]='d';
 
-            buffer_out[iLocalIndex++] = iValueToUart;
-            buffer_out[iLocalIndex++] = iValueToUart >> 8;
-            break;
-
-         case keKprop:
-            iValueToUart = (uint16_t)lValueToTransmit; // K = 1
-
-            buffer_out[iLocalIndex++] = iValueToUart;
-            buffer_out[iLocalIndex++] = iValueToUart >> 8;
-            break;
-
-//            case keKint:
-//               pcPrefix = "Kin";
-//               bPointShifted = FALSE;
-//               break;
-
-         case keKdiff:
-            iValueToUart = (uint16_t)lValueToTransmit; // K = 1
-
-            buffer_out[iLocalIndex++] = iValueToUart;
-            buffer_out[iLocalIndex++] = iValueToUart >> 8;
-            break;
-
-
-         case keUreal:
-            lValueToTransmit = getMicroVoltsADC(lValueToTransmit); // K = 1e-6
-
-            if (lValueToTransmit > (uint32_t)(kfUmax*1e6))
-            {
-               lValueToTransmit = (uint32_t)(kfUmax*1e6);
-            }
-
-            buffer_out[iLocalIndex++] = lValueToTransmit;
-            lValueToTransmit = lValueToTransmit >> 8;
-            buffer_out[iLocalIndex++] = lValueToTransmit;
-            lValueToTransmit = lValueToTransmit >> 8;
-            buffer_out[iLocalIndex++] = lValueToTransmit;
-
-            // Last byte is not needed
-            //lValueToTransmit = lValueToTransmit >> 8;
-            //buffer_out[iLocalIndex++] = lValueToTransmit;
-            break;
-
-         case keCLevel:
-            if (lCryoLevel > 100)
-            {
-               buffer_out[iLocalIndex] = 100;
-            }
-            else
-            {
-               buffer_out[iLocalIndex] = (uint8_t)lCryoLevel;
-            }
-            iLocalIndex++;
-            break;
-
-         default:
-            break;
+         fModulStatusByte2.sStatus.bUARTSensorReception = FALSE;
       }
-   }
-
-
-#ifdef debugmode
-
-   printf("\r\nData Index = %d", iLocalIndex);
-
-#endif
-
-   // States of controller
-   buffer_out[iLocalIndex] = 0;
-   if (bScanOrSetMode)
-   {
-      buffer_out[iLocalIndex] |= 1 << 0;
-      printf("\r\n Status On");
-   }
-
-   // Desired temperature achieved
-   if (bTempSetAchieved)
-   {
-      buffer_out[iLocalIndex] |= 1 << 1;
-   }
-
-   // Temperature display mode
-   if (bCelsiumOrKelvin)
-   {
-      buffer_out[iLocalIndex] |= 1 << 2;
-      printf("\r\n Celsius");
-   }
-
-   // the Cryolevel measurement foreseen
-   if (bCryoLevelMeasuring)
-   {
-      buffer_out[iLocalIndex] |= 1 << 3;
-      printf("\r\n CryoLevel On");
-   }
-   printf("\r\n Reg Status %d", buffer_out[iLocalIndex]);
-   iLocalIndex++;
-
-   // States of Co-Processor modul
-   buffer_out[iLocalIndex++] = fPowerModulStatus.cStatusByte;
-   printf("\r\n Co Proc %d", fPowerModulStatus.cStatusByte);
-
-   buffer_out[iLocalIndex++]='e';
-   buffer_out[iLocalIndex++]='n';
-   buffer_out[iLocalIndex++]='d';
-
-   if (iLocalIndex > kBuff_In_Out_length)
-   {
-      //printf("Error on transmiting!");
-      //exit
-      return(-1);
-   }
-   else
-   {
-      int wcount = write(fd_PC_Communication, buffer_out, iLocalIndex);
-      //printf("UART Transmitted: %d\n", iLocalIndex);
-
-      if (wcount < 0)
+      else
       {
-         return(-2);
+         iLocalIndex = 0;
+         buffer_out[iLocalIndex++]='b';
+         buffer_out[iLocalIndex++]='e';
+         buffer_out[iLocalIndex++]='g';
+
+         buffer_out[iLocalIndex++] = keSimpleTelegram;
+
+         for (eVarNumber = keTreal; eVarNumber < keMaxVariableNum; eVarNumber++)
+         {
+            lValueToTransmit = *VarForIndication[eVarNumber].plVarValue;
+
+            switch(eVarNumber)
+            {
+               case keTreal:
+               case keTset:
+               case keTcurSet:
+               case keDeltaT:
+                  iValueToUart = (uint16_t)lValueToTransmit; // K = 0.01
+
+                  buffer_out[iLocalIndex++] = iValueToUart;
+                  buffer_out[iLocalIndex++] = iValueToUart >> 8;
+
+                  break;
+
+               case keDeltat:
+                  iValueToUart = (uint16_t)lValueToTransmit; // K = 0.001
+
+                  buffer_out[iLocalIndex++] = iValueToUart;
+                  buffer_out[iLocalIndex++] = iValueToUart >> 8;
+                  break;
+
+               case keKprop:
+                  iValueToUart = (uint16_t)lValueToTransmit; // K = 1
+
+                  buffer_out[iLocalIndex++] = iValueToUart;
+                  buffer_out[iLocalIndex++] = iValueToUart >> 8;
+                  break;
+
+//                  case keKint:
+//                     pcPrefix = "Kin";
+//                     bPointShifted = FALSE;
+//                     break;
+
+               case keKdiff:
+                  iValueToUart = (uint16_t)lValueToTransmit; // K = 1
+
+                  buffer_out[iLocalIndex++] = iValueToUart;
+                  buffer_out[iLocalIndex++] = iValueToUart >> 8;
+                  break;
+
+
+               case keUreal:
+                  lValueToTransmit = getMicroVoltsADC(lValueToTransmit); // K = 1e-6
+
+                  if (lValueToTransmit > (uint32_t)(kfUmax*1e6))
+                  {
+                     lValueToTransmit = (uint32_t)(kfUmax*1e6);
+                  }
+
+                  buffer_out[iLocalIndex++] = lValueToTransmit;
+                  lValueToTransmit          = lValueToTransmit >> 8;
+
+                  buffer_out[iLocalIndex++] = lValueToTransmit;
+                  lValueToTransmit          = lValueToTransmit >> 8;
+
+                  buffer_out[iLocalIndex++] = lValueToTransmit;
+
+                  // Last byte is not needed
+                  //lValueToTransmit = lValueToTransmit >> 8;
+                  //buffer_out[iLocalIndex++] = lValueToTransmit;
+                  break;
+
+               case keCLevel:
+                  if (lCryoLevel > 100)
+                  {
+                     buffer_out[iLocalIndex] = 100;
+                  }
+                  else
+                  {
+                     buffer_out[iLocalIndex] = (uint8_t)lCryoLevel;
+                  }
+                  iLocalIndex++;
+                  break;
+
+               default:
+                  break;
+            }
+         }
+
+         // States of controller
+         buffer_out[iLocalIndex++] = fModulStatusByte2.cStatusByte;
+
+         // States of Co-Processor modul
+         buffer_out[iLocalIndex++] = fModulStatusByte1.cStatusByte;
+
+         uint8_t cLocalWork = getCheckSum(&buffer_out[0], iLocalIndex);
+         // Add checksum
+         buffer_out[iLocalIndex++] = cLocalWork;
+
+         buffer_out[iLocalIndex++]='e';
+         buffer_out[iLocalIndex++]='n';
+         buffer_out[iLocalIndex++]='d';
+
       }
+
+      if (iLocalIndex > kBuff_In_Out_length)
+      {
+         printf("Error on transmiting!");
+         //exit
+         return(-1);
+      }
+      else
+      {
+         int wcount = write(fd_PC_Communication, buffer_out, iLocalIndex);
+
+         if (wcount < 0)
+         {
+            return(-2);
+         }
+      }
+
+      #ifdef debugmode
+         printf("\r\n -> Transmitted Data Length = %d", iLocalIndex);
+         printf("\r\n -> Transmitted Command = %d\r\n", buffer_out[3]);
+
+         printf("\r\n -> Transmitted Command = ");
+         for (i = 0; i < iLocalIndex; i++)
+         {
+            printf("%d,", buffer_out[i]);
+         }
+         printf("\r\n");
+      #endif
+
+      fModulStatusByte2.sStatus.bUARTMsgReceived = FALSE;
+
    }
 
    return(0);
 }
 
-int uart_addBuffer(char* str)
+int uart_addBuffer(uint8_t* str)
 {
 
    // Attempt to send and receive
@@ -257,7 +279,7 @@ int uart_addBuffer(char* str)
     //printf("UART Sending: %s", str);
 #endif
 
-   int wcount = write(fd_PC_Communication, str, strlen(str));
+   int wcount = write(fd_PC_Communication, (char*)str, strlen((char*)str));
    if (wcount < 0)
    {
        perror("Write");
@@ -272,7 +294,7 @@ int uart_addBuffer(char* str)
    }
 }
 
-int uart_send_responce(char* buffer)
+int uart_send_responce(uint8_t* buffer)
 {
    return(0);
 }
@@ -287,7 +309,7 @@ int uart_send_responce(char* buffer)
 int uart_read(void)
 {
    // Pointer on symbol in receiving buffer to save data in read buffer
-   char* pReceivedDataPoiner;
+   uint8_t* pReceivedDataPoiner;
    uint16_t iIndexData;
 
    // Read bytes. The behavior of read() (e.g. does it block?,
@@ -334,16 +356,17 @@ int uart_read(void)
       return 0;
    }
 
-
 }
 
 boolean uart_data_receive(void)
 {
    static sComm_full_structure    sCommandStr;
    static CommunicationState_enum eReadingState;
-   static char Sym1, Sym2, Sym3;
-   char cWorkSymbol;
+   static uint8_t Sym1, Sym2, Sym3;
+   static uint16_t iSupposedTelegramLength;
+   uint8_t cWorkSymbol;
    uint16_t iError;
+   uint16_t i;
 
    int iLocalWorkCounter; // safeguard of overflow
 
@@ -372,11 +395,12 @@ boolean uart_data_receive(void)
             {
                eReadingState = eReadingCommand;
                sCommandStr.cComm = 0;
-               sCommandStr.cLength = 0;
-               for (int i=0; i < kCommand_length; i++)
-               {
-                  sCommandStr.cData[i] = 0;
-               }
+               sCommandStr.cLength = 3;
+
+               sCommandStr.cData[0] = 'b';
+               sCommandStr.cData[1] = 'e';
+               sCommandStr.cData[2] = 'g';
+
             }
             else
             {
@@ -388,6 +412,18 @@ boolean uart_data_receive(void)
          case eReadingCommand:
 
             sCommandStr.cComm = cWorkSymbol;
+            sCommandStr.cData[sCommandStr.cLength++] = cWorkSymbol;
+
+            // If sensor data are to be transmitted the expected length is other
+            if ((cWorkSymbol == keSendSensor) || (cWorkSymbol == keSensorComplete))
+            {
+               iSupposedTelegramLength = kSensor_Data_Command_length;
+            }
+            else
+            {
+               iSupposedTelegramLength = kCommand_length;
+            }
+
 
             eReadingState = eReadingTelegramm;
 
@@ -398,30 +434,48 @@ boolean uart_data_receive(void)
             Sym2 = Sym3;
             Sym3 = cWorkSymbol;
 
-            if ((Sym1   == 'e') && (Sym2 == 'n') && (Sym3 == 'd'))
+            if ((Sym1 == 'e') && (Sym2 == 'n') && (Sym3 == 'd'))
             {
-               eReadingState = eLookForStartTelegramm;
-               bReceived = TRUE;
+               sCommandStr.cData[sCommandStr.cLength++] = cWorkSymbol;
+
+               if (checkCheckSum(&sCommandStr.cData[0], sCommandStr.cLength-4, sCommandStr.cData[sCommandStr.cLength-4]))
+               {
+                  eReadingState = eLookForStartTelegramm;
+
+                  bReceived = TRUE;
+                  // Telegram successfully received
+                  if (DataProcess(&sCommandStr))
+                  {
+                     fModulStatusByte2.sStatus.bUARTMsgReceived = FALSE;
+                  }
+                  else
+                  {
+                     fModulStatusByte2.sStatus.bUARTMsgReceived = TRUE;
+                  }
+               }
+               else
+               {
+                  // Wrong checksum
+                  eReadingState = eLookForStartTelegramm;
+                  iError = kErrChecksum;
+               }
+
             }
             else
             {
                sCommandStr.cData[sCommandStr.cLength] = cWorkSymbol;
-               if (sCommandStr.cLength < kCommand_length)
+               if (sCommandStr.cLength < iSupposedTelegramLength)
                {
+                  // still here in state looking for end
                   sCommandStr.cLength++;
                }
                else
                {
                   // error!
+                  iError = kErrTelLength;
+                  printf("\n\r Cur.length =  %d, but expected length = %d", sCommandStr.cLength, iSupposedTelegramLength);
+
                   eReadingState = eLookForStartTelegramm;
-                  iError = 1;
-                  #ifdef debugmode
-                     printf("\r\n sCommandStr.cLength = %d", sCommandStr.cLength);
-                     for (int i=0; i < sCommandStr.cLength; i++)
-                     {
-                        printf(":%d:", sCommandStr.cData[i]);
-                     }
-                  #endif
                }
             }
          break;
@@ -432,107 +486,56 @@ boolean uart_data_receive(void)
       }
    }
 
-
    if (!iError && bReceived)
    {
-      if (iLocalWorkCounter >= kBuff_In_Out_length)
-      {
-         // Overflow
-         return(FALSE);
-      }
-
       #ifdef debugmode
-      if (sCommandStr.cComm != keNOP)
-      {
-         printf("\r\nReceived Data Length = %d", sCommandStr.cLength);
-         printf("\r\nReceived Command = %d\r\n", sCommandStr.cComm);
+         printf("\r\n <- Ok Received Data Length = %d", sCommandStr.cLength);
+         printf("\r\n <- Ok Received Command = %d\r\n", sCommandStr.cComm);
 
-         //printf("\r\nReceived Command = ");
-         for (int i=0; i < sCommandStr.cLength; i++)
+         printf("\r\n <- Command = ");
+         for (i = 0; i < sCommandStr.cLength; i++)
          {
-            printf("%d,", sCommandStr.cData[i]);
+            printf(" %d,", sCommandStr.cData[i]);
          }
          printf("\r\n");
-      }
       #endif
 
-      if (sCommandStr.cLength > 2)
-      {
-         sCommandStr.cLength = sCommandStr.cLength - 2;
-      }
-      else
-      {
-         if (sCommandStr.cLength == 2)
-         {
-            // Empty command
-            sCommandStr.cLength = 0;
-            sCommandStr.cComm = 0;
-         }
-         else
-         {
-            // error!
-            iError = 2;
-         }
-      }
-
-#ifdef debugmode
-if (sCommandStr.cComm != keNOP)
-{
-   printf("\r\n After Data Length = %d", sCommandStr.cLength);
-   printf("\r\n After Command = %d\r\n", sCommandStr.cComm);
-
-   //printf("\r\nReceived Command = ");
-   for (int i=0; i < sCommandStr.cLength; i++)
-   {
-      printf("%d,", sCommandStr.cData[i]);
-   }
-   printf("\r\n");
-}
-#endif
-
-
-      // Telegram successfully received
-      (void)DataProcess(&sCommandStr);
-      // Next command reception
-      bReceived = TRUE;
-
-      #ifdef debugmode
-      if (sCommandStr.cComm != keNOP)
-      {
-         printf("\r\nReceived Data Length = %d", sCommandStr.cLength);
-         printf("\r\nReceived Command = %d\r\n", sCommandStr.cComm);
-
-         //printf("\r\nReceived Command = ");
-         for (int i=0; i < sCommandStr.cLength; i++)
-         {
-            printf("%d,", sCommandStr.cData[i]);
-         }
-         printf("\r\n");
-      }
-      #endif
+      // Data clear
+      sCommandStr.cComm = 0;
+      sCommandStr.cLength = 0;
    }
    else
    {
-      #ifdef debugmode
-         if (iError)
+      if (iError)
+      {
+         fModulStatusByte2.sStatus.bUARTMsgReceived = FALSE;
+         #ifdef debugmode
+         printf("\r\n ERROR!");
+         printf("\r\n iError = %d\r\n", iError);
+
+         printf("\r\n <- Error Received Data Length = %d", sCommandStr.cLength);
+         printf("\r\n <- Error Received Command = %d\r\n", sCommandStr.cComm);
+
+         printf("\r\n <- Command = ");
+         for (i = 0; i < sCommandStr.cLength; i++)
          {
-            printf("\r\n ERROR!");
-            printf("\r\n iError = %d\r\n", iError);
-            printf("\r\n bReceived = %d\r\n", bReceived);
+            printf(" %d,", sCommandStr.cData[i]);
          }
-      #endif
+         printf("\r\n");
+         #endif
+      }
    }
 
    return(bReceived);
 }
 
 /* --------------------------------------------------------------------------
- * char GetNextChar(void)
+ * uint8_t GetNextChar(void)
  * Function reads next char no matter which, according to the global pointer pBufferReadPointer
  * -------------------------------------------------------------------------- */
-char GetNextChar(void)
+uint8_t GetNextChar(void)
 {
-   char cReturn;
+   uint8_t cReturn;
 
    cReturn = *pBufferReadPointer;
 
@@ -552,13 +555,16 @@ char GetNextChar(void)
 
 uint16_t DataProcess(sComm_full_structure* psDataToProcess)
 {
+   #define kDataShift 4
    uint32_t lOutValue, lMin, lMax;
+   uint16_t iLineNumber;
+   char* pStringPointer;
 
    switch (psDataToProcess->cComm)
    {
       case keTset_input:
          printf("Command Tset\r\n");
-         lOutValue = (uint32_t)psDataToProcess->cData[0] | (uint32_t)(psDataToProcess->cData[1] << 8);
+         lOutValue = (uint32_t)psDataToProcess->cData[kDataShift +0] | (uint32_t)(psDataToProcess->cData[kDataShift +1] << 8);
          lMin = VarForIndication[keTset].lVarMin;
          lMax = VarForIndication[keTset].lVarMax;
 
@@ -576,9 +582,10 @@ uint16_t DataProcess(sComm_full_structure* psDataToProcess)
 
          lTemperatureSet = lOutValue;
          break;
+
       case keTstep_input:
          printf("Command Tstep\r\n");
-         lOutValue = (uint32_t)psDataToProcess->cData[0] | (uint32_t)(psDataToProcess->cData[1] << 8);
+         lOutValue = (uint32_t)psDataToProcess->cData[kDataShift +0] | (uint32_t)(psDataToProcess->cData[kDataShift +1] << 8);
          lMin = VarForIndication[keDeltaT].lVarMin;
          lMax = VarForIndication[keDeltaT].lVarMax;
 
@@ -599,7 +606,7 @@ uint16_t DataProcess(sComm_full_structure* psDataToProcess)
 
       case ketime_step_input:
          printf("Command time step\r\n");
-         lOutValue = (uint32_t)psDataToProcess->cData[0] | (uint32_t)(psDataToProcess->cData[1] << 8);
+         lOutValue = (uint32_t)psDataToProcess->cData[kDataShift +0] | (uint32_t)(psDataToProcess->cData[kDataShift +1] << 8);
 
          lMin = VarForIndication[keDeltat].lVarMin;
          lMax = VarForIndication[keDeltat].lVarMax;
@@ -618,9 +625,10 @@ uint16_t DataProcess(sComm_full_structure* psDataToProcess)
 
          lDelta_t = lOutValue;
          break;
+
       case keKprop_input:
          printf("Command Kprop\r\n");
-         lOutValue = (uint32_t)psDataToProcess->cData[0] | (uint32_t)(psDataToProcess->cData[1] << 8);
+         lOutValue = (uint32_t)psDataToProcess->cData[kDataShift +0] | (uint32_t)(psDataToProcess->cData[kDataShift +1] << 8);
          lMin = VarForIndication[keKprop].lVarMin;
          lMax = VarForIndication[keKprop].lVarMax;
 
@@ -638,9 +646,10 @@ uint16_t DataProcess(sComm_full_structure* psDataToProcess)
 
          lKprop = lOutValue;
          break;
+
       case keKdiff_input:
          printf("Command Kdiff\r\n");
-         lOutValue = (uint32_t)psDataToProcess->cData[0] | (uint32_t)(psDataToProcess->cData[1] << 8);
+         lOutValue = (uint32_t)psDataToProcess->cData[kDataShift +0] | (uint32_t)(psDataToProcess->cData[kDataShift +1] << 8);
          lMin = VarForIndication[keKdiff].lVarMin;
          lMax = VarForIndication[keKdiff].lVarMax;
 
@@ -659,11 +668,9 @@ uint16_t DataProcess(sComm_full_structure* psDataToProcess)
          break;
 
       case keSet_ScanSelect:
-         if (psDataToProcess->cData[0])
+         if (psDataToProcess->cData[kDataShift +0])
          {
             bScanOrSetMode = TRUE;
-            printf("Command Kdiff\r\n");
-
          }
          else
          {
@@ -691,19 +698,41 @@ uint16_t DataProcess(sComm_full_structure* psDataToProcess)
          K45_Exit(0);
          break;
 
+      case keSendSensor:
+         // Line number: two bytes after command
+         iLineNumber = (psDataToProcess->cData[kDataShift+0] << 8) | psDataToProcess->cData[kDataShift+1];
+         // The line to be saved goes after LineNumber and ends with '\n'.
+         // Here just transfer the address of first byte
+         pStringPointer = (char*) &psDataToProcess->cData[kDataShift + 2];
+         printf(pStringPointer);
+
+         // If Previous File not saved yet, the Line should be ignored
+         if (!fModulStatusByte2.sStatus.bSensorDataFileReceived)
+         {
+            (void)appendSensReceivedLine(iLineNumber, pStringPointer);
+            fModulStatusByte2.sStatus.bUARTSensorReception = TRUE;
+         }
+
+         break;
+
+      case keSensorComplete:
+         printf("\n\r  Sensor completion\n\r");
+         fModulStatusByte2.sStatus.bSensorDataFileReceived = TRUE;
+         (void)completeSensDataFile();
+         break;
+
+      case keNOP:
+         // Nothing to do
+         break;
+
       default:
          //printf("Unknown Command");
          return(-1);
          break;
    }
 
-   // the command fulfilled -> clear
-   psDataToProcess->cComm = 0;
-   psDataToProcess->cLength = 0;
-
    return(0);
 }
-
 
 /* --------------------------------------------------------------------------
  * int uart_close(void)
@@ -713,5 +742,45 @@ int uart_close(void)
 {
     close(fd_PC_Communication);
     return 0;
+}
+
+/* --------------------------------------------------------------------------
+ * uint8_t getCheckSum(uint8_t* pcBuff, uint16_t wLength)
+ * Gets sum on 1 Byte basis. The last 1 byte for the sum itself)
+ * --------------------------------------------------------------------------*/
+uint8_t getCheckSum(uint8_t* pcBuff, uint16_t wLength)
+{
+   uint8_t cResult;
+   uint16_t wIndex;
+
+   cResult = 0;
+
+   for (wIndex = 0; wIndex < wLength; wIndex++, pcBuff++)
+   {
+      cResult += *pcBuff;
+   }
+
+   return(cResult);
+}
+
+/* --------------------------------------------------------------------------
+ * boolean checkCheckSum(uint8_t* pcBuff, uint16_t wLength, uint8_t cCheckSum)
+ * Gets sum on 1 Byte basis. The last 1 byte for the sum itself)
+ * --------------------------------------------------------------------------*/
+boolean checkCheckSum(uint8_t* pcBuff, uint16_t wLength, uint8_t cCheckSum)
+{
+   uint8_t cLocalValue;
+
+   cLocalValue = getCheckSum(pcBuff, wLength);
+
+   printf("\n\r cLocalValue =  %d, but received cCheckSum = %d, with length %d\n\r", cLocalValue, cCheckSum, wLength);
+   if (cLocalValue == cCheckSum)
+   {
+      return(TRUE);
+   }
+   else
+   {
+      return(FALSE);
+   }
 }
 

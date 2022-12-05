@@ -4,7 +4,7 @@
  *  Header for communication to additional RealTime module (RTmodule) operations.
  *
  *  In Fact it is Arduino "mini"
- *  Created on: 23 жовт. 2020 р.
+ *  Created on: 23 пїЅпїЅпїЅпїЅ. 2020 пїЅ.
  *      Author: Oliva
  */
 
@@ -61,26 +61,45 @@ ByteMeaning | StartSym |  Status       | Heater Voltage              | Cooler Vo
 
 typedef struct
 {
-   uint8_t bSetMode             :1;      // Setmode of co-processor
+   uint8_t bSetMode             :1;      // Set command for co-processor (rudiment)
    uint8_t bHeaterError         :1;      // HeaterVoltage
    uint8_t bCoolerError         :1;      // CoolerVoltage
    uint8_t bControlDiodeError   :1;      // ControlDiodeVoltage
    uint8_t bNotFoundErr         :1;      // co-processor plate not found
    uint8_t bFree                :3;
-} sStatus_Struct;
+} sStatusByte1_Struct;
 
 typedef union
 {
-   sStatus_Struct sStatus;
+   sStatusByte1_Struct sStatus;
    uint8_t        cStatusByte;
-} fStatusUnion;
+} fStatusByte1_Union;
+
+typedef struct
+{
+   uint8_t bScanOrSetMode          :1;      // Setmode of co-processor
+   uint8_t bTempSetAchieved        :1;      // HeaterVoltage
+   uint8_t bCelsiumOrKelvin        :1;      // CoolerVoltage
+   uint8_t bCryoLevelMeasuring     :1;      // ControlDiodeVoltage
+   uint8_t bUARTMsgReceived        :1;      // Received massage from UART
+   uint8_t bUARTSensorReception    :1;      // Sensor data line received. The Flag means the SensorData is going on
+   uint8_t bSensorDataFileReceived :1;      // Sensor data transmitting complete -> file should be saved
+   uint8_t bFree                   :1;
+} sStatusByte2_Struct;
+
+typedef union
+{
+   sStatusByte2_Struct sStatus;
+   uint8_t             cStatusByte;
+} fStatusByte2_Union;
+
 
 #pragma pack(push, 1)
 typedef struct
 {
    uint8_t      free;
    char         startSymbol;
-   fStatusUnion Status;
+   fStatusByte1_Union Status;
    uint16_t     HeaterVoltage;
    uint16_t     CoolerVoltage;
    uint16_t     ControlDiodeVoltage;

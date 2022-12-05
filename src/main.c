@@ -1,5 +1,6 @@
 //
 
+#include <ads1256.h>
 #include <stdlib.h>
 #include <signal.h>
 #include <time.h>
@@ -11,7 +12,6 @@
 #include <sys/types.h>
 #include <unistd.h>
 
-#include "ADS1256.h"
 #include <i2c_lcd.h>
 
 #include "ADCHeader.h"
@@ -68,13 +68,17 @@ extern int uart_init(void);
 extern int uart_read(void);
 extern boolean uart_data_receive(void);
 extern int uart_send(void);
+extern int copyFile(void);
+extern int BashCopyFile(void);
+
 extern void ADC_Calibration(void);
+
 
 // Additional measurements
 extern void FrequencyMeasurement(void);
 extern void ControlVoltagesCheck(void);
 extern int PigpioInit(void);
-
+extern void CurentStatusUpdate(void);
 
 // Local procedures
 uint16_t K45GlobalInit(void);
@@ -110,16 +114,6 @@ void* Interface_Process()
 
       lcd_update();
 
-      if (bUART_Active)
-      {
-         if (!(iLocalCounter % 4))
-         {
-            // every 2 seconds
-            iLocalCounter = 0;
-            uart_send();
-         }
-      }
-
       delay(kIndicationTimeUpdate);
    }
    /* the function must return something - NULL will do */
@@ -141,6 +135,8 @@ void* ServiceMeasurements_Process()
 
       // Clear errors
       ControlVoltagesCheck();
+
+      CurentStatusUpdate();
 
       delay(kIndicationTimeUpdate);
    }
@@ -308,6 +304,11 @@ void* UARTCommThread_service()
          }
 
          uart_data_receive();
+         uart_send();
+
+
+         //(void)copyFile();
+         BashCopyFile();
 
          //
          delay(kReceptionCheck);
@@ -446,15 +447,19 @@ uint16_t K45GlobalInit(void)
 
    Result = FALSE;
 
+#if !gdb_DEBUG_config
    if (ADC_Init())
+#endif
    {
       printf("ADS1256 inited\n");
    }
+#if !gdb_DEBUG_config
    else
    {
       printf("ADS1256 wrong\n");
       Result = TRUE;
    }
+#endif
 
    #ifdef RASPBERRY_PWM
       PowerModulconfigured = PWM_init();
@@ -504,9 +509,9 @@ int main(void)
 
     if (Inits())
     {
-            #ifdef debugmode
-             //  printf(" Inited successful\r\n");
-            #endif
+       #ifdef debugmode
+        //  printf(" Inited successful\r\n");
+       #endif
     }
 
     // All Threads stop
