@@ -114,16 +114,41 @@ void getSensCharacteristic(uint16_t* piPointNumber, uint16_t* piTemperature_Poin
       {
          // If we get hear it means the string was read, otherwise the loop would be end
 
-          //printf("%f %f %d \n", flTemperature, flVoltage, iLocalVar);
-          iPointQuantity++;
+         // Check the correctness of read values
+         if (flTemperature > kTemperatureMax)
+         {
+            flTemperature = kTemperatureMax;
+         }
+         else
+         {
+            if (flTemperature < kTemperatureMin)
+            {
+               flTemperature = kTemperatureMin;
+            }
+         }
 
-          // get the read values
-          *piTemperature_Points = (uint16_t)(flTemperature * 100.0);
-          *piVoltage_Points = (uint16_t)(flVoltage * 10000.0);
+         if (flVoltage > kfUmax)
+         {
+            flVoltage = kfUmax;
+         }
+         else
+         {
+            if (flVoltage < kfUmin)
+            {
+               flVoltage = kfUmin;
+            }
+         }
+
+         //printf("%f %f %d \n", flTemperature, flVoltage, iLocalVar);
+         iPointQuantity++;
+
+         // get the read values
+         *piTemperature_Points = (uint16_t)(flTemperature * 100.0);
+         *piVoltage_Points = (uint16_t)(flVoltage * 10000.0);
 
          // Increase pointers for next point-values
-          piTemperature_Points++;
-          piVoltage_Points++;
+         piTemperature_Points++;
+         piVoltage_Points++;
       }
 
       *piPointNumber = iPointQuantity;
