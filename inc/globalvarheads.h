@@ -36,6 +36,8 @@ extern uint16_t iTMH_Length;
 extern uint16_t iTMH_Temperature_points[400];
 extern uint16_t iTMH_Voltage_points[400];
 extern char     SensorName[10];
+extern uint32_t lSensorNumber;
+extern const char* TMH_file_common, TMH_file_common_bak;
 
 /* ---------------------------------------------------
  * Regulating

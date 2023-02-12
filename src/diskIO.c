@@ -22,10 +22,17 @@ static const char* str_CelsOrKel = "#CelsOrKel";
 static const char* str_LevelMeasuringOn = "#LevelMeasuringOn";
 static const char* str_LowLevelFrequency = "#LowLevelFrequency";
 static const char* str_HighLevelFrequency = "#HighLevelFrequency";
+/* Number of sensor characteristic to use.
+   0: By default: sensor.out
+   1: : sensor1.out
+   2: : sensor2.out
+   ... and so on
+*/
+static const char* str_SensorNumber  = "#SensorNumber";
 
 // Global procedures ------------------------
 void getSensCharacteristic(uint16_t* piPointNumber, uint16_t* piTemperature_Points, uint16_t* piVoltage_Points);
-boolean getPIDcoefs(void);
+boolean getConfiguration(void);
 uint16_t getDirectory(void);
 uint16_t saveSettings(void);
 void RestoreDefault(void);
@@ -54,16 +61,25 @@ void getSensCharacteristic(uint16_t* piPointNumber, uint16_t* piTemperature_Poin
    float flTemperature, flVoltage;
    unsigned int iLocalVar, iLocalVar2;
 
+   if (lSensorNumber == 0)
+   {
+      TMH_file_common =kTMH_file_common0;
+   }
+   else
+   {
+      TMH_file_common =kTMH_file_common1;
+   }
+
    pFilePointer = fopen(TMH_file_common,"r");
 
    if (pFilePointer == NULL)
    {
-      pFilePointer = fopen(TMH_file,"r");
+      pFilePointer = fopen(kTMH_file,"r");
    }
 
    if (pFilePointer == NULL)
    {
-      printf("Impossible to open file %s\r\n",TMH_file);
+      printf("Impossible to open file %s\r\n",kTMH_file);
       getDirectory();
       return;
    }
@@ -162,8 +178,9 @@ void getSensCharacteristic(uint16_t* piPointNumber, uint16_t* piTemperature_Poin
  * plKprop   -
  * plKintegr -
  * plKdiff   -
+ * and all other configuration of system
  ***********************************************************************************************************/
-boolean getPIDcoefs(void)
+boolean getConfiguration(void)
 {
 
    FILE* pFilePointer;
@@ -234,6 +251,12 @@ boolean getPIDcoefs(void)
                {
                   HighLevelFrequency = lLocalWorkValue;
                   printf("HighLevelFrequency: %u\n", HighLevelFrequency);
+                  iResult++;
+               }
+               else if (!strcmp(str, str_SensorNumber))
+               {
+                  lSensorNumber = lLocalWorkValue;
+                  printf("SensorNumber: %u\n", lSensorNumber);
                   iResult++;
                }
             }
@@ -312,6 +335,10 @@ uint16_t saveSettings(void)
       fprintf(fp, "\n%s\r\n", str_HighLevelFrequency);
       fprintf(fp, "%u\r\n", HighLevelFrequency);
 
+
+      fprintf(fp, "\n%s\r\n", str_SensorNumber);
+      fprintf(fp, "%u\r\n", lSensorNumber);
+
       fclose(fp);
    }
    else
@@ -333,6 +360,8 @@ void RestoreDefault(void)
    LowLevelFrequency   = Def_LowLevelFrequency;
    HighLevelFrequency  = Def_HighLevelFrequency;
    bCelsiumOrKelvin    = Def_CelsiumOrKelvin;
+
+   lSensorNumber       = Def_SensorNumber;
 }
 
 // --------------------------------------------------------------------------------------------------------------
@@ -525,9 +554,12 @@ int BashCopyFile(void)
     }
     else
     {
+       // Form the command string
        sprintf(BashCommand, "%s%s%s%s",WorkStr, Received_TMH_file, WorkStr2, TMH_file_common);
 
+       // Command execution
        Result = system(BashCommand);
+       // The reception-Flag is low again
        fModulStatusByte2.sStatus.bSensorDataFileReceived = FALSE;
     }
 

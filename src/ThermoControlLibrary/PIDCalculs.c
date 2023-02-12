@@ -13,7 +13,6 @@
 #include "globalvarheads.h"
 
 // Extern procedures -----------------------------------
-extern void getSensCharacteristic(uint16_t* piPointNumber, uint16_t* piTemperature_Points, uint16_t* piVoltage_Points);
 extern sSensorVoltageDataStruct getSensorData(void);
 extern uint32_t getTemperatureValue(float fVoltage);
 // Extern Procedures-----------------------------------------------------------------

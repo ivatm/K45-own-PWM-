@@ -13,7 +13,7 @@
 
 // extern procedures --------------------------------------
 extern void getSensCharacteristic(uint16_t* piPointNumber, uint16_t* piTemperature_Points, uint16_t* piVoltage_Points);
-extern boolean getPIDcoefs(void);
+extern boolean getConfiguration(void);
 
 // Local procedures ---------------------------------------
 
@@ -235,10 +235,11 @@ uint16_t TableLineInterpolation(uint16_t iXX)
    ------------------------------------------------------------------------------- */
 void iniTemperaturController(void)
 {
+   // First get configuration since it envolves the sensor number
+   getConfiguration();
+
+   // now get the sensor characteristic
    getSensCharacteristic(&iTMH_Length, &iTMH_Temperature_points[0], &iTMH_Voltage_points[0]);
-
-   getPIDcoefs();
-
 }
 
 /* -------------------------------------------------------------------------------

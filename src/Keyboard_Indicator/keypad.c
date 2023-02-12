@@ -269,6 +269,9 @@ KeyPadCommands_enum GetCommand(Buttons_enum eKey)
             {
                char SymbolToAdd;
 
+               // To avoid a warning
+               SymbolToAdd = 0;
+
                switch (eKey)
                {
                   case (ke_1):
@@ -366,6 +369,8 @@ KeyPadCommands_enum GetCommand(Buttons_enum eKey)
             else
             {
                char SymbolToAdd;
+               SymbolToAdd = 0;
+
 
                switch (eKey)
                {
@@ -410,19 +415,22 @@ KeyPadCommands_enum GetCommand(Buttons_enum eKey)
                      break;
 
                   default:
+                     SymbolToAdd = 0;
                      break;
                }
 
-               sInputString.InputString[sInputString.cInputCursoPosition] = SymbolToAdd;
-               // Let say 6 the maximum input length
-               if (sInputString.cInputCursoPosition < 6)
+               if (SymbolToAdd != 0)
                {
-                  sInputString.cInputCursoPosition++;
+                  sInputString.InputString[sInputString.cInputCursoPosition] = SymbolToAdd;
+                  // Let say 6 the maximum input length
+                  if (sInputString.cInputCursoPosition < 6)
+                  {
+                     sInputString.cInputCursoPosition++;
+                  }
+                  // Move the null symbol further
+                  sInputString.InputString[sInputString.cInputCursoPosition] = '\0';
+                  eResult = keNotReadyCommand;
                }
-               // Move the null symbol further
-               sInputString.InputString[sInputString.cInputCursoPosition] = '\0';
-               eResult = keNotReadyCommand;
-
             }
          }
          break;
@@ -606,7 +614,12 @@ void ProcessCommand(KeyPadCommands_enum eCommand)
 void PerceiveInputValue(void)
 {
    uint32_t lOutValue;
+   boolean bToBeInput;
    float    fLocalValue;
+
+   // Init to avoid warning
+   lOutValue = 0;
+   bToBeInput = FALSE;
 
    switch(sDisplay_Zone[eCurrentCursorZone].eVariable)
    {
@@ -615,6 +628,7 @@ void PerceiveInputValue(void)
          break;
 
       case keTset:
+         bToBeInput = TRUE;
 
          fLocalValue = atof(sInputString.InputString);
          if (bCelsiumOrKelvin)
@@ -633,11 +647,13 @@ void PerceiveInputValue(void)
          break;
 
       case keDeltaT:
+         bToBeInput = TRUE;
          fLocalValue = atof(sInputString.InputString);
          lOutValue = mNormTemp(fLocalValue);
          break;
 
       case keDeltat:
+         bToBeInput = TRUE;
          fLocalValue = atof(sInputString.InputString);
          lOutValue = mNormTime(fLocalValue);
          break;
@@ -646,6 +662,7 @@ void PerceiveInputValue(void)
 
 //         case keKint:
       case keKdiff:
+         bToBeInput = TRUE;
          lOutValue = atol(sInputString.InputString);
          break;
 
@@ -661,21 +678,24 @@ void PerceiveInputValue(void)
          break;
    }
 
-   // Limiting range
-   if (lOutValue > VarForIndication[sDisplay_Zone[eCurrentCursorZone].eVariable].lVarMax)
+   if (bToBeInput)
    {
-      lOutValue = VarForIndication[sDisplay_Zone[eCurrentCursorZone].eVariable].lVarMax;
-   }
-   else
-   {
-      if (lOutValue < VarForIndication[sDisplay_Zone[eCurrentCursorZone].eVariable].lVarMin)
+      // Limiting range
+      if (lOutValue > VarForIndication[sDisplay_Zone[eCurrentCursorZone].eVariable].lVarMax)
       {
-         lOutValue = VarForIndication[sDisplay_Zone[eCurrentCursorZone].eVariable].lVarMin;
+         lOutValue = VarForIndication[sDisplay_Zone[eCurrentCursorZone].eVariable].lVarMax;
       }
-   }
+      else
+      {
+         if (lOutValue < VarForIndication[sDisplay_Zone[eCurrentCursorZone].eVariable].lVarMin)
+         {
+            lOutValue = VarForIndication[sDisplay_Zone[eCurrentCursorZone].eVariable].lVarMin;
+         }
+      }
 
-   // Get it
-   *VarForIndication[sDisplay_Zone[eCurrentCursorZone].eVariable].plVarValue = lOutValue;
+      // Get it
+      *VarForIndication[sDisplay_Zone[eCurrentCursorZone].eVariable].plVarValue = lOutValue;
+   }
 }
 
 boolean PossibleInput(VarsForIndicator_enum eVariable)
@@ -752,6 +772,17 @@ void PerceiveInputCommand(void)
          else
          {
             HighLevelFrequency = LowLevelFrequency;
+         }
+         break;
+
+      case keSetSensorNumber:
+         if (lSensorNumber >=1 )
+         {
+            lSensorNumber = 0;
+         }
+         else
+         {
+            lSensorNumber++;
          }
          break;
 

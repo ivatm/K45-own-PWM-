@@ -65,8 +65,8 @@ typedef enum
    keKprop,      //   lKprop,
 //   keKint,       //   lKint,
    keKdiff,      //   lKdiff,
-   keUreal,       //  sSensorData.iUcurrent,
-   keCLevel,      //   lCryoLevel : Cryogenics level,
+   keUreal,      //   sSensorData.iUcurrent,
+   keCLevel,     //   lCryoLevel : Cryogenics level,
    keMaxVariableNum
 } VarsForIndicator_enum;
 

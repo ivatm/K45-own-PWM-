@@ -124,6 +124,7 @@ typedef enum
    keSetCryoLevelSwitch     = 15, // On/Off Cryolevel indication
    keSetFrequency_LowLevel  = 16, // On this command the measured frequency accords to 0 %
    keSetFrequency_HighLevel = 17, // On this command the measured frequency accords to 100 %
+   keSetSensorNumber        = 18, // On this command the current Sensor gets changed
 
    // Commands for Sensor transmition
    keSendSensor     = 100, // Command for a line transmitting. Subcommand is the number. If 0 - start initialization

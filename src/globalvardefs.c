@@ -34,7 +34,9 @@ uint16_t iTMH_Length;
 uint16_t iTMH_Temperature_points[400];
 uint16_t iTMH_Voltage_points[400];
 char     SensorName[10];
-
+uint32_t lSensorNumber;
+const char* TMH_file_common = kTMH_file_common0;
+const char* TMH_file_common_bak = kTMH_file_common0_bak;
 
 /* ---------------------------------------------------
  * Regulating

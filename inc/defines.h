@@ -139,6 +139,7 @@
 #define Def_HighLimitFrequence (1000000uL)// 1 MHz the highest possible frequency
 
 #define Def_CelsiumOrKelvin    (0)
+#define Def_SensorNumber       (0)
 
 // File name for all configurations
 #define config_file "K45_settings.dat"
