@@ -73,12 +73,15 @@ extern int BashCopyFile(void);
 
 extern void ADC_Calibration(void);
 
-
 // Additional measurements
 extern void FrequencyMeasurement(void);
 extern void ControlVoltagesCheck(void);
 extern int PigpioInit(void);
 extern void CurentStatusUpdate(void);
+
+// protection
+uint64_t getSerialID(void);
+extern void K45_Exit(uint16_t iReason);
 
 // Local procedures
 uint16_t K45GlobalInit(void);
@@ -356,7 +359,9 @@ uint16_t Inits(void)
    delay(500);
    if (pt_id != 0)
    {
-      printf("ServiceMeasurements  created\n");
+      #ifdef debugmode
+         printf("ServiceMeasurements  created\n");
+      #endif
       Err = SetThreadPriority(pt_id, 10);
 
       if (Err != 0)
@@ -451,12 +456,16 @@ uint16_t K45GlobalInit(void)
    if (ADC_Init())
 #endif
    {
-      printf("ADS1256 inited\n");
+      #ifdef debugmode
+         printf("ADS1256 inited\n");
+      #endif
    }
 #if !gdb_DEBUG_config
    else
    {
-      printf("ADS1256 wrong\n");
+      #ifdef debugmode
+         printf("ADS1256 wrong\n");
+      #endif
       Result = TRUE;
    }
 #endif
@@ -474,7 +483,9 @@ uint16_t K45GlobalInit(void)
    else
    {
       Result = TRUE;
-      printf("PowerModul can`t configure ...\n");
+      #ifdef debugmode
+         printf("PowerModul can`t configure ...\n");
+      #endif
    }
 
 
@@ -487,13 +498,17 @@ uint16_t K45GlobalInit(void)
    // UART initialisation
    if (uart_init())
    {
-      printf("UART wrong\n");
+      #ifdef debugmode
+         printf("UART wrong\n");
+      #endif
       bUART_Active = FALSE;
       Result = TRUE;
    }
    else
    {
-      printf("UART inited\n");
+      #ifdef debugmode
+         printf("UART inited\n");
+      #endif
       bUART_Active = TRUE;
       // still Result = FALSE;
    }
@@ -510,7 +525,14 @@ int main(void)
     if (Inits())
     {
        #ifdef debugmode
+       printf("%Lx\n", getSerialID());
         //  printf(" Inited successful\r\n");
+       #else
+          if (0xceef6b49 != getSerialID())
+          {
+             printf(" Wrong HW\r\n");
+             K45_Exit(0);
+          }
        #endif
     }
 

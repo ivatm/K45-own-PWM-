@@ -1,16 +1,16 @@
 /*
  * config.h
  *
- *  Created on: 25 ρεπο. 2013
+ *  Created on: 25. 03. 2013
  *      Author: Oliva
- */ 
+ */
 
 #ifndef CONFIG_H_
 #define CONFIG_H_
 
 
 /*debugging_ivatm*/
-#define debugmode
+//#define debugmode
 
 /* -------------------------------------------------------
  * Raspberry native PWM

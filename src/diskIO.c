@@ -115,7 +115,9 @@ void getSensCharacteristic(uint16_t* piPointNumber, uint16_t* piTemperature_Poin
       {
          SensorName[iLocalVar] = *ptr;
       }
-      printf("Sensor name: %s\r\n",SensorName);
+      #ifdef debugmode
+         printf("Sensor name: %s\r\n",SensorName);
+      #endif
 
       iPointQuantity = 0;
 
@@ -192,8 +194,6 @@ boolean getConfiguration(void)
    pFilePointer = fopen(config_file,"r");
    iResult = 0;
 
-   printf("Im here\n");
-
    if (pFilePointer == NULL)
    {
       printf("Impossible to open file %s\n",config_file);
@@ -207,56 +207,74 @@ boolean getConfiguration(void)
 
          if (str[0] == '#')
          {
-            printf("And here Im trying: %s\n", str);
+            #ifdef debugmode
+               printf("And here Im trying: %s\n", str);
+            #endif
             lLocal = fscanf(pFilePointer, "%u", &lLocalWorkValue);
             if (lLocal > 0)
             {
                if (!strcmp(str, str_Kprop))
                {
                   lKprop = lLocalWorkValue;
+                  #ifdef debugmode
                   printf("lKprop: %u\n", lKprop);
+                  #endif
                   iResult++;
                }
                else if (!strcmp(str, str_Kint))
                {
                   lKint = lLocalWorkValue;
+                  #ifdef debugmode
                   printf("lKint: %u\n", lKint);
+                  #endif
                   iResult++;
                }
                else if (!strcmp(str, str_Kdiff))
                {
                   lKdiff = lLocalWorkValue;
+                  #ifdef debugmode
                   printf("lKdiff: %u\n", lKdiff);
+                  #endif
                   iResult++;
                }
                else if (!strcmp(str, str_CelsOrKel))
                {
                   bCelsiumOrKelvin = lLocalWorkValue;
+                  #ifdef debugmode
                   printf("bCelsiumOrKelvin: %u\n", bCelsiumOrKelvin);
+                  #endif
                   iResult++;
                }
                else if (!strcmp(str, str_LevelMeasuringOn))
                {
                   bCryoLevelMeasuring = lLocalWorkValue;
+                  #ifdef debugmode
                   printf("bCryoLevelMeasuring: %u\n", bCryoLevelMeasuring);
+                  #endif
                   iResult++;
                }
                else if (!strcmp(str, str_LowLevelFrequency))
                {
                   LowLevelFrequency = lLocalWorkValue;
+                  #ifdef debugmode
                   printf("LowLevelFrequency: %u\n", LowLevelFrequency);
+                  #endif
                   iResult++;
                }
                else if (!strcmp(str, str_HighLevelFrequency))
                {
                   HighLevelFrequency = lLocalWorkValue;
+                  #ifdef debugmode
                   printf("HighLevelFrequency: %u\n", HighLevelFrequency);
+                  #endif
                   iResult++;
                }
                else if (!strcmp(str, str_SensorNumber))
                {
                   lSensorNumber = lLocalWorkValue;
+                  #ifdef debugmode
                   printf("SensorNumber: %u\n", lSensorNumber);
+                  #endif
                   iResult++;
                }
             }
@@ -308,7 +326,6 @@ uint16_t saveSettings(void)
       printf("Saving: Kprop %d\n", lKprop);
       printf("Saving: Kint %d\n", lKint);
       printf("Saving: Kdiff %d\n", lKdiff);
-
 #endif
 
       fprintf(fp, "\n%s\r\n", str_Kint);
@@ -428,8 +445,9 @@ int completeSensDataFile(void)
 {
   // int Result;
 
-   printf("File received");
-
+   #ifdef debugmode
+      printf("File received");
+   #endif
    return(0);
 }
 
@@ -487,7 +505,9 @@ int copyFile(void)
             wLocalCounter++;
 
             fputc((char)sym, fDst);
-            printf("%c", (char)sym);
+            #ifdef debugmode
+               printf("%c", (char)sym);
+            #endif
             sym = fgetc(fSrc);
          }
 

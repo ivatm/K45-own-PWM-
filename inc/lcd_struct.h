@@ -1,7 +1,7 @@
 /*
  * lcd_struct.h
  *
- *  Created on: 13 квіт. 2021 р.
+ *  Created on: 13 03. 2021.
  *      Author: Oliva
  */
 

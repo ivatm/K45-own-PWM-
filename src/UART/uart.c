@@ -105,7 +105,9 @@ int uart_send(void)
    uint32_t lValueToTransmit;
    uint16_t iLocalIndex;
    uint16_t iValueToUart;
-   int i;
+   #ifdef debugmode
+      int i;
+   #endif
 
    //Transmit only when received
    if (fModulStatusByte2.sStatus.bUARTMsgReceived)
@@ -238,8 +240,9 @@ int uart_send(void)
 
       if (iLocalIndex > kBuff_In_Out_length)
       {
+         #ifdef debugmode
          printf("Error on transmiting!");
-         //exit
+         #endif
          return(-1);
       }
       else
@@ -366,7 +369,9 @@ boolean uart_data_receive(void)
    static uint16_t iSupposedTelegramLength;
    uint8_t cWorkSymbol;
    uint16_t iError;
-   uint16_t i;
+   #ifdef debugmode
+      int i;
+   #endif
 
    int iLocalWorkCounter; // safeguard of overflow
 
@@ -473,7 +478,9 @@ boolean uart_data_receive(void)
                {
                   // error!
                   iError = kErrTelLength;
-                  printf("\n\r Cur.length =  %d, but expected length = %d", sCommandStr.cLength, iSupposedTelegramLength);
+                  #ifdef debugmode
+                     printf("\n\r Cur.length =  %d, but expected length = %d", sCommandStr.cLength, iSupposedTelegramLength);
+                  #endif
 
                   eReadingState = eLookForStartTelegramm;
                }
@@ -563,7 +570,9 @@ uint16_t DataProcess(sComm_full_structure* psDataToProcess)
    switch (psDataToProcess->cComm)
    {
       case keTset_input:
-         printf("Command Tset\r\n");
+         #ifdef debugmode
+            printf("Command Tset\r\n");
+         #endif
          lOutValue = (uint32_t)psDataToProcess->cData[kDataShift +0] | (uint32_t)(psDataToProcess->cData[kDataShift +1] << 8);
          lMin = VarForIndication[keTset].lVarMin;
          lMax = VarForIndication[keTset].lVarMax;
@@ -584,7 +593,9 @@ uint16_t DataProcess(sComm_full_structure* psDataToProcess)
          break;
 
       case keTstep_input:
-         printf("Command Tstep\r\n");
+         #ifdef debugmode
+            printf("Command Tstep\r\n");
+         #endif
          lOutValue = (uint32_t)psDataToProcess->cData[kDataShift +0] | (uint32_t)(psDataToProcess->cData[kDataShift +1] << 8);
          lMin = VarForIndication[keDeltaT].lVarMin;
          lMax = VarForIndication[keDeltaT].lVarMax;
@@ -605,7 +616,9 @@ uint16_t DataProcess(sComm_full_structure* psDataToProcess)
          break;
 
       case ketime_step_input:
-         printf("Command time step\r\n");
+         #ifdef debugmode
+            printf("Command time step\r\n");
+         #endif
          lOutValue = (uint32_t)psDataToProcess->cData[kDataShift +0] | (uint32_t)(psDataToProcess->cData[kDataShift +1] << 8);
 
          lMin = VarForIndication[keDeltat].lVarMin;
@@ -627,7 +640,9 @@ uint16_t DataProcess(sComm_full_structure* psDataToProcess)
          break;
 
       case keKprop_input:
-         printf("Command Kprop\r\n");
+         #ifdef debugmode
+            printf("Command Kprop\r\n");
+         #endif
          lOutValue = (uint32_t)psDataToProcess->cData[kDataShift +0] | (uint32_t)(psDataToProcess->cData[kDataShift +1] << 8);
          lMin = VarForIndication[keKprop].lVarMin;
          lMax = VarForIndication[keKprop].lVarMax;
@@ -648,7 +663,9 @@ uint16_t DataProcess(sComm_full_structure* psDataToProcess)
          break;
 
       case keKdiff_input:
-         printf("Command Kdiff\r\n");
+         #ifdef debugmode
+            printf("Command Kdiff\r\n");
+         #endif
          lOutValue = (uint32_t)psDataToProcess->cData[kDataShift +0] | (uint32_t)(psDataToProcess->cData[kDataShift +1] << 8);
          lMin = VarForIndication[keKdiff].lVarMin;
          lMax = VarForIndication[keKdiff].lVarMax;
@@ -704,7 +721,9 @@ uint16_t DataProcess(sComm_full_structure* psDataToProcess)
          // The line to be saved goes after LineNumber and ends with '\n'.
          // Here just transfer the address of first byte
          pStringPointer = (char*) &psDataToProcess->cData[kDataShift + 2];
-         printf(pStringPointer);
+         #ifdef debugmode
+            printf(pStringPointer);
+         #endif
 
          // If Previous File not saved yet, the Line should be ignored
          if (!fModulStatusByte2.sStatus.bSensorDataFileReceived)
@@ -716,7 +735,9 @@ uint16_t DataProcess(sComm_full_structure* psDataToProcess)
          break;
 
       case keSensorComplete:
-         printf("\n\r  Sensor completion\n\r");
+         #ifdef debugmode
+            printf("\n\r  Sensor completion\n\r");
+         #endif
          fModulStatusByte2.sStatus.bSensorDataFileReceived = TRUE;
          (void)completeSensDataFile();
          break;
@@ -724,6 +745,18 @@ uint16_t DataProcess(sComm_full_structure* psDataToProcess)
       case keNOP:
          // Nothing to do
          break;
+
+      case keSetSensorNumber:
+         if (lSensorNumber >=1 )
+         {
+            lSensorNumber = 0;
+         }
+         else
+         {
+            lSensorNumber++;
+         }
+         break;
+
 
       default:
          //printf("Unknown Command");
@@ -773,7 +806,9 @@ boolean checkCheckSum(uint8_t* pcBuff, uint16_t wLength, uint8_t cCheckSum)
 
    cLocalValue = getCheckSum(pcBuff, wLength);
 
-   printf("\n\r cLocalValue =  %d, but received cCheckSum = %d, with length %d\n\r", cLocalValue, cCheckSum, wLength);
+   #ifdef debugmode
+      printf("\n\r cLocalValue =  %d, but received cCheckSum = %d, with length %d\n\r", cLocalValue, cCheckSum, wLength);
+   #endif
    if (cLocalValue == cCheckSum)
    {
       return(TRUE);

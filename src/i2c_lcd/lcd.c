@@ -130,18 +130,18 @@ static void SetCursorInZone(display_zone_enum DisplayZoneNumber, uint16_t ShiftI
 
 void clearZone(display_zone_enum DisplayZoneNumber)
 {
-   char string[20] = {"                   "};
+   char string[21] = {"                    "};
 
    switch (DisplayZoneNumber)
    {
       case eModeZone:
-      case eStepTimeZone:
-         string[9] = '\0';
+      case eStepTempZone:
+         string[10] = '\0';
          break;
 
       case eErrorsZone:
-      case eStepTempZone:
-         string[10] = '\0';
+      case eStepTimeZone:
+         string[11] = '\0';
          break;
 
       default:
@@ -493,12 +493,12 @@ void GetStringOfVariable(Display_Zone_struct* psDisplayStructData, char* pOutStr
 
          if (bCelsiumOrKelvin)
          {
-            sprintf(String, "%.2f", mDeNormTemp(lValueToIndicator));
+            sprintf(String, "%.1f", mDeNormTemp(lValueToIndicator));
             sufix[0] = 0xDF/*'°'*/; sufix[1] = 'C';
          }
          else
          {
-            sprintf(String, "%.2f", mDeNormTemp(lValueToIndicator));
+            sprintf(String, "%.1f", mDeNormTemp(lValueToIndicator));
             sufix[0] = ' '; sufix[1] = 'K';
          }
          break;
