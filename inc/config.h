@@ -8,7 +8,12 @@
 #ifndef CONFIG_H_
 #define CONFIG_H_
 
-
+// if defined, Processor ID should be considered
+//#define PROTECTION
+#ifdef PROTECTION
+// Necessary (requisite) HW_ID
+#define HW_ID     0xceef6b49
+#endif
 /*debugging_ivatm*/
 //#define debugmode
 

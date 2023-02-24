@@ -528,11 +528,13 @@ int main(void)
        printf("%Lx\n", getSerialID());
         //  printf(" Inited successful\r\n");
        #else
-          if (0xceef6b49 != getSerialID())
-          {
-             printf(" Wrong HW\r\n");
-             K45_Exit(0);
-          }
+          #ifdef PROTECTION
+             if (HW_ID != getSerialID())
+             {
+                printf(" Wrong HW\r\n");
+                K45_Exit(0);
+             }
+          #endif
        #endif
     }
 
