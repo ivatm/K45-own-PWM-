@@ -784,6 +784,7 @@ void PerceiveInputCommand(void)
          {
             lSensorNumber++;
          }
+         saveSettings();
          break;
 
       case keSendSensor:

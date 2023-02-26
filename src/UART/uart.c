@@ -755,6 +755,7 @@ uint16_t DataProcess(sComm_full_structure* psDataToProcess)
          {
             lSensorNumber++;
          }
+         saveSettings();
          break;
 
 
