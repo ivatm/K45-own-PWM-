@@ -8,6 +8,7 @@ extern int32_t getMicroVoltsADC(uint32_t ADCCode);
 extern uint16_t saveSettings(void);
 extern void ADC_service(void);
 extern void ShowSensor(void);
+extern void ShowApplicationName(void);
 extern void K45_Exit(uint16_t iReason);
 
 // Sensor data receive
@@ -709,6 +710,10 @@ uint16_t DataProcess(sComm_full_structure* psDataToProcess)
 
       case keShowSensor:
          ShowSensor();
+         break;
+
+      case keShowApplication:
+         ShowApplicationName();
          break;
 
       case keExit:

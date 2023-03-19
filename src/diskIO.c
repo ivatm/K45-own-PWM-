@@ -5,6 +5,7 @@
  ************************************************************************/
 
 #include "incs.h"
+#include <glob.h>
 #include <string.h>
 //#include <libio.h>
 #include <stdio.h>
@@ -13,6 +14,10 @@
 #include <unistd.h>
 #include "globalvarheads.h"
 #include <errno.h>
+
+// external procedures
+extern void ShowUpdateError(void);
+extern void K45_Exit(uint16_t iReason);
 
 // Local constants
 static const char* str_Kprop = "#Kprop";
@@ -121,7 +126,7 @@ void getSensCharacteristic(uint16_t* piPointNumber, uint16_t* piTemperature_Poin
 
       iPointQuantity = 0;
 
-      // 3 lines pass - nothing to save
+      // lines pass - nothing to save
       (void)fgets(str, 50, pFilePointer);
       (void)fgets(str, 50, pFilePointer);
       (void)fgets(str, 50, pFilePointer);
@@ -157,7 +162,6 @@ void getSensCharacteristic(uint16_t* piPointNumber, uint16_t* piTemperature_Poin
             }
          }
 
-         //printf("%f %f %d \n", flTemperature, flVoltage, iLocalVar);
          iPointQuantity++;
 
          // get the read values
@@ -505,9 +509,6 @@ int copyFile(void)
             wLocalCounter++;
 
             fputc((char)sym, fDst);
-            #ifdef debugmode
-               printf("%c", (char)sym);
-            #endif
             sym = fgetc(fSrc);
          }
 
@@ -585,3 +586,68 @@ int BashCopyFile(void)
 
     return(Result);
 }
+
+/***********************************************************************************************************
+ * int updateApplication(void)
+ * The procedure copies Application file with mask "K45*.app" from connected USB to /home/pi/K45Update
+ * If all is in order, the old one will be deleted from the work folder /home/pi,
+ * and after reboot the new one will be used
+ * The realized method - using the bush-script
+ ***********************************************************************************************************/
+int BashApplicationUpdate(void)
+{
+    int Result;
+    // The script copies new application file from USB
+    char* WorkStr = "sudo ./AppUpdater.bsh";
+    char  BashCommand[50]; // seems to be enough
+
+    // Vars for glob()
+    // char **found;
+    glob_t gstruct;
+    int r;
+
+    Result = 0;
+
+    // Form the command string
+    sprintf(BashCommand, "%s",WorkStr);
+
+    // Command execution
+    Result = system(BashCommand);
+
+#ifdef debugmode
+   printf("Result = %d \n\r", Result);
+#endif
+
+    if (Result == 0)
+    {
+       // !! https://linux.die.net/man/3/glob
+       // Check whether new file exists
+       r = glob("/home/pi/K45Update/K45*.app", GLOB_ERR , NULL, &gstruct);
+       globfree(&gstruct);
+
+       if (r == 0)
+       {
+          #ifdef debugmode
+             printf("Update possible and ready \n\r");
+          #endif
+          // There is no any error - simply end
+           K45_Exit(3);
+       }
+       else
+       {
+          #ifdef debugmode
+             printf("File not copied \n\r");
+          #endif
+       }
+    }
+
+    #ifdef debugmode
+       printf("Error to show \n\r");
+    #endif
+
+    // Update error
+    ShowUpdateError();
+
+    return(Result);
+}
+

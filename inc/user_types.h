@@ -126,6 +126,10 @@ typedef enum
    keSetFrequency_HighLevel = 17, // On this command the measured frequency accords to 100 %
    keSetSensorNumber        = 18, // On this command the current Sensor gets changed
 
+   // Show the name of this application
+   keShowApplication        = 50,
+   keUpdateApplication      = 55,
+
    // Commands for Sensor transmition
    keSendSensor     = 100, // Command for a line transmitting. Subcommand is the number. If 0 - start initialization
    keSensorComplete = 101,
@@ -141,7 +145,7 @@ typedef enum
 
 /* -------------------------------------------------------
  * The list of states during a file reception
- * ToDo: not realized yet 
+ * ToDo: not realized yet
  * ------------------------------------------------------- */
 typedef enum
 {

@@ -31,6 +31,8 @@ void K45_Exit(uint16_t iReason);
 
 // Local variables
 static boolean bLocalShowingSensorName;
+static boolean bLocalShowingApplicationName;
+static boolean bLocalShowingUpdateError;
 
 // Static procedures
 //static void ShowStringBytes(char* cString);
@@ -45,10 +47,18 @@ void HelloShow(void)
 }
 
 // Procedure shows goodbye message on exit
-void GoodbyeShow(void)
+static void GoodbyeShow(void)
 {
    LCDI2C_setCursor(5, 2);
    LCDI2C_write_String("GOODBYE");
+
+}
+
+// Procedure shows goodbye message on exit
+static void RebootShow(void)
+{
+   LCDI2C_setCursor(5, 2);
+   LCDI2C_write_String("REBOOT");
 
 }
 
@@ -277,6 +287,24 @@ void ShowErrorExecutivePlate(Display_Zone_struct* psDisplayStructData, display_z
          LCDI2C_write_String(dest);
          delay(2000);
          bLocalShowingSensorName = FALSE;
+      }
+      else if (bLocalShowingApplicationName)
+      {
+         char dest[12] = "APP:";
+         SetCursorInZone(keZone1, 6);
+         strcat(dest, myNameApplication);
+         LCDI2C_write_String(dest);
+         delay(2000);
+         bLocalShowingApplicationName = FALSE;
+         clearZone(0);
+         ShowScanOrSetMode(&sDisplay_Zone[0], 0);
+      }
+      else if (bLocalShowingUpdateError)
+      {
+         char dest[12] = "UPD_ERROR";
+         LCDI2C_write_String(dest);
+         delay(2000);
+         bLocalShowingUpdateError = FALSE;
       }
       else
       {
@@ -728,6 +756,20 @@ void ShowSensor(void)
    bLocalShowingSensorName = TRUE;
 }
 
+void ShowApplicationName(void)
+{
+   // Only necessary is to set this flag,
+   // and the procedure knows what to do
+   bLocalShowingApplicationName = TRUE;
+}
+
+void ShowUpdateError(void)
+{
+   // Only necessary is to set this flag,
+   // and the procedure knows what to do
+   bLocalShowingUpdateError = TRUE;
+}
+
 void K45_Exit(uint16_t iReason)
 {
    switch (iReason)
@@ -750,10 +792,22 @@ void K45_Exit(uint16_t iReason)
          printf("ADC error initialization\n\r");
          break;
 
-         // ADC not found
-         case 2:
-            printf("Stopped by user\n\r");
-            break;
+      // ADC not found
+      case 2:
+         printf("Stopped by user\n\r");
+         break;
+
+      case 3:
+           // Bring system to idle mode (the command to executive plate)
+           eSystemState = keIdle;
+           // Stop display updating
+           fSystemThreadControl.s.bInterfaceOn = FALSE;
+           // clear it off
+           LCDI2C_clear();
+           RebootShow();
+           delay(1000);
+           break;
+
 
       default:
          break;

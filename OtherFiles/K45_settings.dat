@@ -1,0 +1,30 @@
+// The configurations K43 controller
+
+
+#Kprop
+10
+
+#Kint
+100
+
+#Kdiff
+200
+
+// Kelvin/Celsium mode
+
+#CelsOrKel
+0
+
+// Show CryoLevel mode
+
+#LevelMeasuringOn
+0
+
+#LowLevelFrequency
+900000
+
+#HighLevelFrequency
+100000
+
+#SensorNumber
+0

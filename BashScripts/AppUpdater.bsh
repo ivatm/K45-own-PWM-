@@ -1,0 +1,23 @@
+#!/bin/bash
+#set -x
+#trap read debug
+
+FILE=(/media/usb/K45*.app)
+
+#Check whether File exists
+if [[ -e $FILE ]]; then
+   DIRECTORY=/home/pi/K45Update
+
+   if [ -d "$DIRECTORY" ]; then
+      echo "Already exists"
+   else
+      sudo mkdir DIRECTORY
+   fi
+
+   # Move file to work directory
+   sudo cp "$FILE" "$DIRECTORY"
+
+   echo "Ok"
+else
+   echo "Not mounted or File not exists"
+fi

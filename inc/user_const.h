@@ -24,5 +24,6 @@
 #define kTMH_file_common1_bak "sensor1.bak"
 #define kTMH_file "KV188.OUT"
 #define Received_TMH_file "//var//tmp//temp.OUT"
+#define ApplicationName "NoName" // by default
 
 #endif /* USER_CONST_H_ */

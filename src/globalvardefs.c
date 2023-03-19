@@ -38,6 +38,12 @@ uint32_t lSensorNumber;
 const char* TMH_file_common = kTMH_file_common0;
 const char* TMH_file_common_bak = kTMH_file_common0_bak;
 
+/* Name of K45 application by starting
+   Only 10 symbols considered
+*/
+char  myNameApplication[10] = ApplicationName;
+
+
 /* ---------------------------------------------------
  * Regulating
  * --------------------------------------------------- */

@@ -24,6 +24,8 @@ void ControlDiodeCheck(int gpio, int level, uint32_t tick);
 void CurentStatusUpdate(void);
 
 int PigpioInit(void);
+void ControlVoltagesCheck(void);
+
 
 static pthread_mutex_t ImpulsCounter_lock = PTHREAD_MUTEX_INITIALIZER;
 static uint32_t lLocalImpulsCounter;
@@ -43,21 +45,7 @@ int PigpioInit(void)
 
    if (gpioInitialise()<0) return 1;
 
-   // if (gpioRead(fModulStatusByte1.sStatus.bHeaterError ))
-   if (bcm2835_gpio_lev(kGPIO_check_diode))
-   {
-      fModulStatusByte1.sStatus.bControlDiodeError = TRUE;
-   }
-
-   if (bcm2835_gpio_lev(kGPIO_check_heater))
-   {
-      fModulStatusByte1.sStatus.bHeaterError  = TRUE;
-   }
-
-   if (bcm2835_gpio_lev(kGPIO_check_cooler))
-   {
-      fModulStatusByte1.sStatus.bCoolerError  = TRUE;
-   }
+   ControlVoltagesCheck();
 
    // Frequency measurement.
    // Only front edge checked
@@ -147,10 +135,16 @@ void HeaterCheck(int gpio, int level, uint32_t tick)
    if (level == 1)
    { // change to high (a rising edge)
       fModulStatusByte1.sStatus.bHeaterError  = FALSE;
+      #ifdef debugmode
+         printf("Heater Up\n\r");
+      #endif
    }
    else
    {
       fModulStatusByte1.sStatus.bHeaterError  = TRUE;
+      #ifdef debugmode
+         printf("Heater Down\n\r");
+      #endif
    }
 }
 
@@ -163,10 +157,16 @@ void CoolerCheck(int gpio, int level, uint32_t tick)
    if (level == 1)
    {// change to high (a rising edge)
       fModulStatusByte1.sStatus.bCoolerError  = FALSE;
+      #ifdef debugmode
+         printf("Cooler Up\n\r");
+      #endif
    }
    else
    {
       fModulStatusByte1.sStatus.bCoolerError  = TRUE;
+      #ifdef debugmode
+         printf("Cooler Down\n\r");
+      #endif
    }
 }
 
@@ -180,17 +180,48 @@ void ControlDiodeCheck(int gpio, int level, uint32_t tick)
    {// change to high (a rising edge)
       //printf("Clear\r\n");
       fModulStatusByte1.sStatus.bControlDiodeError = FALSE;
+      #ifdef debugmode
+         printf("Diode Up\n\r");
+      #endif
    }
    else
    {
       //printf("Set\r\n");
       fModulStatusByte1.sStatus.bControlDiodeError = TRUE;
+      #ifdef debugmode
+            printf("Diode Down\n\r");
+      #endif
    }
 }
 
 void ControlVoltagesCheck(void)
 {
-   // ???
+   if (!bcm2835_gpio_lev(kGPIO_check_diode))
+   {
+      fModulStatusByte1.sStatus.bControlDiodeError = TRUE;
+   }
+   else
+   {
+      fModulStatusByte1.sStatus.bControlDiodeError = FALSE;
+   }
+
+   if (!bcm2835_gpio_lev(kGPIO_check_heater))
+   {
+      fModulStatusByte1.sStatus.bHeaterError  = TRUE;
+   }
+   else
+   {
+      fModulStatusByte1.sStatus.bHeaterError  = FALSE;
+   }
+
+   if (!bcm2835_gpio_lev(kGPIO_check_cooler))
+   {
+      fModulStatusByte1.sStatus.bCoolerError  = TRUE;
+   }
+   else
+   {
+      fModulStatusByte1.sStatus.bCoolerError  = FALSE;
+   }
 }
 
 /* ----------------------------------------------

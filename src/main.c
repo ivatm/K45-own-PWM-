@@ -413,6 +413,12 @@ uint16_t Inits(void)
    {
       printf("PigpioInit not init!\n");
    }
+   else
+   {
+   #ifdef debugmode
+      printf("Pigpio inited\n\r");
+   #endif
+   }
 
    return(TRUE);
 }
@@ -518,32 +524,57 @@ uint16_t K45GlobalInit(void)
    return Result;
 }
 
-
-int main(void)
+// Input Parameter - a name of the application
+int main(int argc, char *argv[])
 {
+   uint16_t iLocalVar;
+   char* ptr;
 
-    if (Inits())
-    {
-       #ifdef debugmode
-       printf("%Lx\n", getSerialID());
-        //  printf(" Inited successful\r\n");
-       #else
-          #ifdef PROTECTION
-             if (HW_ID != getSerialID())
-             {
-                printf(" Wrong HW\r\n");
-                K45_Exit(0);
-             }
-          #endif
-       #endif
-    }
+   if (argc == 2 )
+   {
 
-    // All Threads stop
-    pthread_join( TemperatureRegulator, NULL);
-    pthread_join( Interface,            NULL);
-    pthread_join( PowerEquipment,       NULL);
-    pthread_join( ServiceMeasurements,  NULL);
-    pthread_join( UARTCommThread,       NULL);
+      for (iLocalVar = 0, ptr= argv[1]; (iLocalVar < 10) && (*ptr != '.');iLocalVar++, ptr++)
+      {
+         myNameApplication[iLocalVar] = *ptr;
+      }
 
-    return 0;
+      // Rest default symbols delete
+      for (; (iLocalVar < 10); iLocalVar++)
+      {
+         myNameApplication[iLocalVar] = ' ';
+      }
+      #ifdef debugmode
+      printf("%s\r\n", &myNameApplication[0]);
+      #endif
+   }
+   else
+   {
+      // No parameters or wrong
+      // myNameApplication - is initialised yet
+   }
+
+   if (Inits())
+   {
+      #ifdef debugmode
+      printf("%Lx\n", getSerialID());
+         printf(" Inited successful\r\n");
+      #else
+         #ifdef PROTECTION
+            if (HW_ID != getSerialID())
+            {
+               printf(" Wrong HW\r\n");
+               K45_Exit(0);
+            }
+         #endif
+      #endif
+   }
+
+   // All Threads stop
+   pthread_join( TemperatureRegulator, NULL);
+   pthread_join( Interface,            NULL);
+   pthread_join( PowerEquipment,       NULL);
+   pthread_join( ServiceMeasurements,  NULL);
+   pthread_join( UARTCommThread,       NULL);
+
+   return 0;
 }

@@ -1,0 +1,36 @@
+#!/bin/bash
+#set -x
+#trap read debug
+
+FILE=(/home/pi/K45Update/K45*.app)
+
+#Check whether File exists
+if [[ -e "$FILE" ]]; then
+
+   # Old file delete
+   oldFILE=(/home/pi/K45*.app)
+   sudo rm "$oldFILE"
+
+   DIRECTORY=/home/pi/
+
+   # Move file to work directory
+   sudo cp "$FILE" "$DIRECTORY"
+
+   sudo rm "$FILE"
+
+else
+   echo "File not exists"
+fi
+
+files=(/home/pi/K45*.app)
+
+K45StartFile=(${files[0]}) 
+
+K45FileOnly=$(basename "${K45StartFile%.*}")
+
+# Set permition for the application file
+sudo chmod 777 $K45StartFile
+
+# Start the application
+sudo $K45StartFile "$K45FileOnly"
+

@@ -15,6 +15,9 @@ extern void GetStringOfVariable(Display_Zone_struct* psDisplayStructData, char* 
 extern uint16_t saveSettings(void);
 extern void ADC_service(void);
 extern void ShowSensor(void);
+extern void ShowApplicationName(void);
+extern int BashApplicationUpdate(void);
+
 extern void K45_Exit(uint16_t iReason);
 extern void RestoreDefault(void);
 
@@ -745,6 +748,14 @@ void PerceiveInputCommand(void)
 
       case keShowSensor:
          ShowSensor();
+         break;
+
+      case keShowApplication:
+         ShowApplicationName();
+         break;
+
+      case keUpdateApplication:
+         BashApplicationUpdate();
          break;
 
       case keSetCryoLevelSwitch:
