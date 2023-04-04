@@ -40,8 +40,6 @@ extern uint32_t lSensorNumber;
 extern const char* TMH_file_common, TMH_file_common_bak;
 extern char myNameApplication[10];
 
-
-
 /* ---------------------------------------------------
  * Regulating
  * --------------------------------------------------- */

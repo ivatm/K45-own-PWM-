@@ -162,6 +162,7 @@ void getSensCharacteristic(uint16_t* piPointNumber, uint16_t* piTemperature_Poin
             }
          }
 
+         //printf("%f %f %d \n", flTemperature, flVoltage, iLocalVar);
          iPointQuantity++;
 
          // get the read values

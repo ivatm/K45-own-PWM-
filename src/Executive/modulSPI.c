@@ -117,7 +117,7 @@ boolean setExecuteModule(void)
    #ifdef RASPBERRY_PWM
 
    #ifndef NO_CONTROL_LEVELS
-      if (fModulStatusByte1.cStatusByte)
+      if ((fModulStatusByte1.cStatusByte) || (eSystemState == keIdle))
       {
          PWM_set(cooler_PWM_CHANNEL, 0);
          PWM_set(heater_PWM_CHANNEL, 0);
